@@ -2,7 +2,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
         .then(response => response.json())
-        .then(nullsToEmpty)
         .then(heroes)
         .catch(error => console.error("Error loading data:", error));
 });
@@ -213,12 +212,17 @@ function sortHeroes(event, heroes) {
 
 
 function heroes(heroes) {
+    // replace any null values with '' so sorting works
+    nullsToEmpty(heroes)
+
     // make the table
     const table = document.createElement('table')
     table.id = 'hero-table'
+
     // table header
     const tHead = makeTableHead()
     table.appendChild(tHead);
+
     // table body
     let tBody = makeTableBody(heroes)
     table.appendChild(tBody);
@@ -234,6 +238,7 @@ function heroes(heroes) {
         table.appendChild(tBody);
     })
 
+    // rough example of search box behavior
     /* searchbox.addEventListener('keypress', (event) => {
         const searchfor = 'lasjd' // get input from searchbox
         heroes.filter((hero) => hero.name.toLowerCase.includes(searchfor.toLowerCase))
