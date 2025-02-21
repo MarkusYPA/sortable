@@ -1,4 +1,9 @@
 td {
     max-width: 200px;
     word-wrap: break-word;
-  }
+}
+
+/* powerstats wide enough */
+td:nth-child(4) {
+    min-width: 150px;
+}

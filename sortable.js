@@ -17,8 +17,12 @@ let weightAsc = true
 let pobAsc = true
 let aligAsc = true
 
+// Null values don't work in many sorting functions, so turn them to ''
 function nullsToEmpty(heroes) {
     heroes.forEach(hero => replaceNullsWithEmptyString(hero));
+
+    // "Dagger" height is set to her birth place
+    heroes[135].appearance.height = ["-", "0 cm"]    
 
     function replaceNullsWithEmptyString(heroObj) {
         for (const key in heroObj) {
@@ -61,22 +65,39 @@ function makeTableHead() {
     return tHead
 }
 
+function objToText(obj){
+    let txt = ''
+    for (let i = 0; i < Object.keys(obj).length; i++) {
+        const key = Object.keys(obj)[i]
+        txt += `${key}: ${obj[key]}`
+        if (i != Object.keys(obj).length - 1) txt += '<br>'
+    }
+    return txt;
+}
+
+function arrToText(arr){
+    let txt = ''
+    for (let i=0; i< arr.length; i++) {
+        txt += arr[i]
+        if (i != arr.length.length - 1) txt += '<br>'
+    }
+    return txt;
+}
+
 function makeTableBody(heroes) {
     const tbody = document.createElement("tbody");
 
     heroes.forEach(hero => {
         const row = document.createElement("tr");
 
-        const values1 = [
+        const values = [
             hero.name,
             hero.biography.fullName,
-        ];
-
-        const values2 = [
+            objToText(hero.powerstats),
             hero.appearance.race,
             hero.appearance.gender,
-            hero.appearance.height,
-            hero.appearance.weight,
+            arrToText(hero.appearance.height),
+            arrToText(hero.appearance.weight),
             hero.biography.placeOfBirth,
             hero.biography.alignment
         ];
@@ -89,27 +110,8 @@ function makeTableBody(heroes) {
         icoCell.appendChild(ico)
         row.appendChild(icoCell)
 
-        // name, full name
-        values1.forEach(value => {
-            const td = document.createElement("td");    // standard data cell
-            td.innerHTML = value;
-            row.appendChild(td)
-        });
-
-        // power stats
-        const pwrStats = document.createElement("td")
-        let powerTxt = ''
-        const pwrObj = hero.powerstats
-        for (let i = 0; i < Object.keys(pwrObj).length; i++) {
-            const key = Object.keys(pwrObj)[i]
-            powerTxt += `${key}: ${pwrObj[key]}`
-            if (i != Object.keys(pwrObj).length - 1) powerTxt += '<br>'
-        }
-        pwrStats.innerHTML = powerTxt;  // innerHTML so line breaks work
-        row.appendChild(pwrStats)
-
-        // race, gender, height, weigth, place of birth, alignement
-        values2.forEach(value => {
+        // other values
+        values.forEach(value => {
             const td = document.createElement("td");    // standard data cell
             td.innerHTML = value;
             row.appendChild(td)
@@ -129,6 +131,26 @@ function allPwr(powerstats) {
         sum += val
     }
     return sum
+}
+
+function cmToNum(str){
+    if (str == undefined) return -1
+    let value = Number(str.match(/\d+/)[0])
+
+    // The enormous are measured in meters 
+    if (str.slice(-2) != 'cm') value *= 100
+
+    return value
+}
+
+function kgToNum(str){
+    if (str == undefined) return -1
+    let value = Number(str.match(/\d+/)[0])
+
+    // The enormous are measured in tons 
+    if (str.slice(-2) != 'kg') value *= 1000
+
+    return value
 }
 
 function sortByColumn(heroes, column = '') {
@@ -171,17 +193,15 @@ function sortByColumn(heroes, column = '') {
             genderAsc = !genderAsc
             break
         case 'height':
-            // TODO: convert to comparable
             heightAsc ?
-                heroes.sort((a, b) => a.appearance.height - b.appearance.height) :
-                heroes.sort((a, b) => b.appearance.height - a.appearance.height)
+                heroes.sort((a, b) => cmToNum(a.appearance.height[1]) - cmToNum(b.appearance.height[1])) :
+                heroes.sort((a, b) => cmToNum(b.appearance.height[1]) - cmToNum(a.appearance.height[1]))
             heightAsc = !heightAsc
             break
         case 'weight':
-            // TODO: convert to comparable
             weightAsc ?
-                heroes.sort((a, b) => a.appearance.weight - b.appearance.weight) :
-                heroes.sort((a, b) => b.appearance.weight - a.appearance.weight)
+                heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1])) :
+                heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
             weightAsc = !weightAsc
             break
         case 'placeofbirth':
@@ -214,6 +234,13 @@ function sortHeroes(event, heroes) {
 function heroes(heroes) {
     // replace any null values with '' so sorting works
     nullsToEmpty(heroes)
+    sortByColumn(heroes) // default sorting
+
+/*     for (let hero of heroes) {
+        if (hero.appearance.weight[1].slice(-2) != 'kg') {
+            console.log(hero.name, hero.appearance.weight)
+        }
+    } */
 
     // make the table
     const table = document.createElement('table')
@@ -228,7 +255,9 @@ function heroes(heroes) {
     table.appendChild(tBody);
 
     document.body.appendChild(table);
-    sortByColumn(heroes)
+    
+    // TODO: dropdown (<select> input) to select size of table
+    // TODO: search box
 
 
     tHead.addEventListener('click', (event) => {
