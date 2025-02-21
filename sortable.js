@@ -22,7 +22,7 @@ function nullsToEmpty(heroes) {
     heroes.forEach(hero => replaceNullsWithEmptyString(hero));
 
     // "Dagger" height is set to her birth place
-    heroes[135].appearance.height = ["-", "0 cm"]    
+    heroes[135].appearance.height = ["-", "0 cm"]
 
     function replaceNullsWithEmptyString(heroObj) {
         for (const key in heroObj) {
@@ -65,7 +65,7 @@ function makeTableHead() {
     return tHead
 }
 
-function objToText(obj){
+function objToText(obj) {
     let txt = ''
     for (let i = 0; i < Object.keys(obj).length; i++) {
         const key = Object.keys(obj)[i]
@@ -75,9 +75,9 @@ function objToText(obj){
     return txt;
 }
 
-function arrToText(arr){
+function arrToText(arr) {
     let txt = ''
-    for (let i=0; i< arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         txt += arr[i]
         if (i != arr.length.length - 1) txt += '<br>'
     }
@@ -133,7 +133,7 @@ function allPwr(powerstats) {
     return sum
 }
 
-function cmToNum(str){
+function cmToNum(str) {
     if (str == undefined) return -1
     let value = Number(str.match(/\d+/)[0])
 
@@ -143,7 +143,7 @@ function cmToNum(str){
     return value
 }
 
-function kgToNum(str){
+function kgToNum(str) {
     if (str == undefined) return -1
     let value = Number(str.match(/\d+/)[0])
 
@@ -153,75 +153,99 @@ function kgToNum(str){
     return value
 }
 
+function aligToNum(align) {
+    switch(align){
+        case'good':
+            return -1
+        case'neutral':
+            return 0
+        case 'bad':
+            return 1
+        default:
+            return 10
+    }
+}
+
 function sortByColumn(heroes, column = '') {
     switch (column) {
         case 'icon':
+            // sort ascending or descending
             icoAsc ?
                 heroes.sort((a, b) => a.images.xs.localeCompare(b.images.xs)) :
                 heroes.sort((a, b) => b.images.xs.localeCompare(a.images.xs))
+            // sort again so undefined are last
+            heroes.sort((a, b) => (a.images.xs.includes('no-portrait') ? 1 : b.images.xs.includes('no-portrait') ? -1 : 0));
             icoAsc = !icoAsc
             break
         case 'name':
             nameAsc ?
                 heroes.sort((a, b) => a.name.localeCompare(b.name)) :
                 heroes.sort((a, b) => b.name.localeCompare(a.name))
+            heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0));
             nameAsc = !nameAsc
             break
         case 'fullname':
             fullNameAsc ?
                 heroes.sort((a, b) => a.biography.fullName.localeCompare(b.biography.fullName)) :
                 heroes.sort((a, b) => b.biography.fullName.localeCompare(a.biography.fullName))
+            heroes.sort((a, b) => (a.biography.fullName == '' ? 1 : b.biography.fullName == '' ? -1 : 0));
             fullNameAsc = !fullNameAsc
             break
         case 'powerstats':
             pwrAsc ?
                 heroes.sort((a, b) => allPwr(a.powerstats) - allPwr(b.powerstats)) :
                 heroes.sort((a, b) => allPwr(b.powerstats) - allPwr(a.powerstats))
+            // Probably no empties here
             pwrAsc = !pwrAsc
             break
         case 'race':
-            console.log(heroes[0].appearance.race)
             raceAsc ?
                 heroes.sort((a, b) => a.appearance.race.localeCompare(b.appearance.race)) :
                 heroes.sort((a, b) => b.appearance.race.localeCompare(a.appearance.race))
+            heroes.sort((a, b) => (a.appearance.race == '' ? 1 : b.appearance.race == '' ? -1 : 0));
             raceAsc = !raceAsc
             break
         case 'gender':
             genderAsc ?
                 heroes.sort((a, b) => a.appearance.gender.localeCompare(b.appearance.gender)) :
                 heroes.sort((a, b) => b.appearance.gender.localeCompare(a.appearance.gender))
+            heroes.sort((a, b) => (a.appearance.gender == '-' ? 1 : b.appearance.gender == '-' ? -1 : 0));
             genderAsc = !genderAsc
             break
         case 'height':
             heightAsc ?
                 heroes.sort((a, b) => cmToNum(a.appearance.height[1]) - cmToNum(b.appearance.height[1])) :
                 heroes.sort((a, b) => cmToNum(b.appearance.height[1]) - cmToNum(a.appearance.height[1]))
+            heroes.sort((a, b) => (cmToNum(a.appearance.height[1]) <= 0 ? 1 : cmToNum(b.appearance.height[1]) <= 0 ? -1 : 0));
             heightAsc = !heightAsc
             break
         case 'weight':
             weightAsc ?
                 heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1])) :
                 heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
+            heroes.sort((a, b) => (kgToNum(a.appearance.weight[1]) <= 0 ? 1 : kgToNum(b.appearance.weight[1]) <= 0 ? -1 : 0));
             weightAsc = !weightAsc
             break
         case 'placeofbirth':
             pobAsc ?
                 heroes.sort((a, b) => a.biography.placeOfBirth.localeCompare(b.biography.placeOfBirth)) :
                 heroes.sort((a, b) => b.biography.placeOfBirth.localeCompare(a.biography.placeOfBirth))
+            heroes.sort((a, b) => (a.biography.placeOfBirth == '-' ? 1 : b.biography.placeOfBirth == '-' ? -1 : 0));
             pobAsc = !pobAsc
             break
         case 'alignement':
             aligAsc ?
-                heroes.sort((a, b) => a.biography.alignment.localeCompare(b.biography.alignment)) :
-                heroes.sort((a, b) => b.biography.alignment.localeCompare(a.biography.alignment))
+                heroes.sort((a, b) => aligToNum(a.biography.alignment) - aligToNum(b.biography.alignment)) :
+                heroes.sort((a, b) => aligToNum(b.biography.alignment) - aligToNum(a.biography.alignment))
+            heroes.sort((a, b) => (a.biography.alignment == '-' ? 1 : b.biography.alignment == '-' ? -1 : 0));
             aligAsc = !aligAsc
             break
         default:
             heroes.sort((a, b) => a.name.localeCompare(b.name))
+            heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0));
     }
-
-    // TODO: move missing values last, every time
 }
+
 
 function sortHeroes(event, heroes) {
     const headCell = event.target.closest('th'); // Clicked header
@@ -236,11 +260,11 @@ function heroes(heroes) {
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
 
-/*     for (let hero of heroes) {
-        if (hero.appearance.weight[1].slice(-2) != 'kg') {
-            console.log(hero.name, hero.appearance.weight)
-        }
-    } */
+    /*     for (let hero of heroes) {
+            if (hero.images.xs.includes('no-portrait')) {
+                console.log(hero.name, hero.images.xs)
+            }
+        } */
 
     // make the table
     const table = document.createElement('table')
@@ -255,14 +279,14 @@ function heroes(heroes) {
     table.appendChild(tBody);
 
     document.body.appendChild(table);
-    
+
     // TODO: dropdown (<select> input) to select size of table
     // TODO: search box
 
 
     tHead.addEventListener('click', (event) => {
         sortHeroes(event, heroes)
-        tBody.innerHTML = ''; // Clear the table body
+        tBody.remove()
         tBody = makeTableBody(heroes)
         table.appendChild(tBody);
     })
@@ -271,8 +295,8 @@ function heroes(heroes) {
     /* searchbox.addEventListener('keypress', (event) => {
         const searchfor = 'lasjd' // get input from searchbox
         heroes.filter((hero) => hero.name.toLowerCase.includes(searchfor.toLowerCase))
-        tBody.innerHTML = '';
+        tBody.remove()
         tBody = makeTableBody(heroes)
-        table.appendChild(tBody);
+        table.appendChild(tBody)
     }) */
 }
