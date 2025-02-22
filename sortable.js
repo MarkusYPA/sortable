@@ -204,6 +204,7 @@ function addListeners() {
     });
 
     nextButton.addEventListener('click', () => {
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
         if (currentPage < totalPages) {
             currentPage++;
             tBody.remove();
@@ -286,7 +287,6 @@ function heroes(heroes) {
         rowsPerPage = newSize === 'all' ? heroesFiltered.length : parseInt(newSize);
         currentPage = 1; // Reset to first page        
         updateTable();
-
     });
 
     addListeners()

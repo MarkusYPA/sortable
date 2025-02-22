@@ -161,9 +161,7 @@ function sortByColumn(heroes, prevSort, ascend, sortBy = '') {
 function sortHeroes(event, heroes, sortBy, prevSort, ascend) {
     const headCell = event.target.closest('th'); // Clicked header
     if (!headCell) return; // Not a header cell
-    sortBy = headCell.dataset.col
     ascend = sortByColumn(heroes, prevSort, ascend, sortBy)
-
     return ascend
 }
 
