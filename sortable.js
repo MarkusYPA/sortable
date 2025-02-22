@@ -57,13 +57,13 @@ function createPageSizeSelector() {
     });
     const label = document.createElement('label');
     label.textContent = 'Items per page: ';
-    
+
     const container = document.createElement('div');
     container.className = 'page-size-container';
     container.appendChild(label);
     container.appendChild(sizeSelect);
-    
-    return { container, sizeSelect }; 
+
+    return { container, sizeSelect };
 }
 
 
@@ -312,11 +312,13 @@ function heroes(heroes) {
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
 
+    makeBackground()
+
     let heroesFiltered = heroes
 
     // searchbar
     const searchbar = document.createElement('input')
-    searchbar.type = 'text'    
+    searchbar.type = 'text'
 
     //error variables
     let showedOnce = false;
@@ -366,11 +368,11 @@ function heroes(heroes) {
 
     // Create container for table and pagination
     const container = document.createElement('div');
-    container.className = 'table-container';      
+    container.className = 'table-container';
 
     const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
     const searchAndPages = document.createElement('div')
-    searchAndPages.id = "search-and-pages"  
+    searchAndPages.id = "search-and-pages"
     searchAndPages.appendChild(searchbar)
     searchAndPages.appendChild(sizeContainer);
     container.appendChild(searchAndPages);
@@ -385,7 +387,7 @@ function heroes(heroes) {
         tBody.remove();
         tBody = makeTableBody(heroesFiltered);
         table.appendChild(tBody);
-        
+
         const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
         currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
         updatePagination();
@@ -399,8 +401,8 @@ function heroes(heroes) {
         updateTable();
     });
 
-     // Add event listeners for pagination
-     prevButton.addEventListener('click', () => {
+    // Add event listeners for pagination
+    prevButton.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             tBody.remove();
@@ -424,9 +426,9 @@ function heroes(heroes) {
         const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
         prevButton.disabled = currentPage === 1;
         nextButton.disabled = currentPage === totalPages;
-        paginationDiv.querySelector('span').textContent = 
-            rowsPerPage === heroesFiltered.length 
-                ? 'Showing all results' 
+        paginationDiv.querySelector('span').textContent =
+            rowsPerPage === heroesFiltered.length
+                ? 'Showing all results'
                 : `Page ${currentPage} of ${totalPages}`;
     }
     // TODO: dropdown (<select> input) to select size of table
@@ -441,4 +443,54 @@ function heroes(heroes) {
         updatePagination();
     })
     document.body.appendChild(container);
+}
+
+function makeBackground() {
+    // Create and append the canvas dynamically
+    const canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+
+    // Set canvas as a background
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.zIndex = "-1"; // Send it to the background
+
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas size to match window
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drawHalftone();
+    }
+
+    const dotSpacing = 40; // Spacing between dots
+    const maxRadius = 25;  // Maximum dot radius
+
+    function drawHalftone() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let y = 0; y < canvas.height + maxRadius; y += dotSpacing) {
+            for (let x = 0; x < canvas.width + maxRadius; x += dotSpacing) {
+                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
+
+                // Generate gradient colors based on position
+                let hue = 20 + (x / canvas.width) * 50; // Hue varies from 0 to 360
+                let lightness = 15 + Math.sin(y * 0.01) * 5; // Lightness oscillates
+
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                //ctx.fillStyle = "#cbe8bb";
+                ctx.fillStyle = `hsl(${hue}, 100%, ${lightness}%)`;
+                ctx.fill();
+            }
+        }
+        ctx.restore();
+    }
+
+    // Resize and redraw on window resize
+    window.addEventListener("resize", resizeCanvas);
+
+    resizeCanvas();
 }

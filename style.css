@@ -1,3 +1,12 @@
+body {
+    display: flex;
+    justify-content: center;
+    /* background-color: rgb(164, 231, 225); */
+    background-color: rgb(31, 24, 35);
+    color: white;
+}
+
+
 .table-container {
     display: flex;
     flex-direction: column;
@@ -16,8 +25,10 @@
 
 table {
     border-collapse: separate; /* Allows border-spacing to work */
-    border-spacing: 5px 5px;  /* Space between columns (10px) and rows (5px) */
+    border-spacing: 5px 25px;  /* Space between columns (10px) and rows (5px) */
     max-width: max-content;
+    background-color: rgba(29, 26, 26, 0.859);
+    padding: 10px;
 }
 
 td {
