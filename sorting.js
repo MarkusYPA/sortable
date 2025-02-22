@@ -164,8 +164,6 @@ function sortHeroes(event, heroes, sortBy, prevSort, ascend) {
     sortBy = headCell.dataset.col
     ascend = sortByColumn(heroes, prevSort, ascend, sortBy)
 
-    console.log(ascend)
-
     return ascend
 }
 

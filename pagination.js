@@ -20,5 +20,7 @@ export function createPaginationControls(totalPages) {
     paginationDiv.appendChild(pageInfo);
     paginationDiv.appendChild(nextButton);
 
-    return { paginationDiv, prevButton, nextButton };
+    return [ paginationDiv, prevButton, nextButton ];
 }
+
+

@@ -4,7 +4,7 @@ body {
     display: flex;
     justify-content: center;
     /* background-color: rgb(164, 231, 225); */
-    background-color: rgb(31, 24, 35);
+    background-color: rgb(47, 34, 55);
     color: white;
     font-family: system-ui, sans-serif;
 }
@@ -19,7 +19,8 @@ h1 {
     flex-direction: column;
     gap: 10px;
     align-items: center;
-    width: max-content;
+    /* width: max-content; */
+    width: 1050px;
 }
 
 .table-container h1 {
@@ -39,7 +40,6 @@ h1 {
 
 
 #search-and-pages {
-    /* flex: 1; */
     display: flex;
     width: 100%;
     gap: 10px;
@@ -47,25 +47,36 @@ h1 {
 }
 
 table {
-    border-collapse: separate; /* Allows border-spacing to work */
-    border-spacing: 5px 25px;  /* Space between columns (10px) and rows (5px) */
+    border-collapse: separate;
+    border-spacing: 5px 25px;
     max-width: max-content;
-    background-color: rgba(29, 26, 26, 0.859);
+    background-color: rgba(31, 32, 36, 0.859);
     padding: 10px;
+    table-layout: fixed;
+}
+
+th {
+    cursor: pointer;
+}
+
+th:hover,
+th:hover ~ td {
+    color: rgb(255, 172, 99); /* Change this to your desired color */
 }
 
 td {
-    word-wrap: break-word;
+    table-layout: fixed;
+    overflow-wrap: break-word;
 }
 
 /* column widths */
-th:nth-child(1) { width: 50px; }
-th:nth-child(2) { width: 100px; }
-th:nth-child(3) { width: 130px; }
-th:nth-child(4) { width: 150px; }
-th:nth-child(5) { width: 80px; }
-th:nth-child(6) { width: 60px; }
-th:nth-child(7) { width: 110px; }
-th:nth-child(8) { width: 100px; }
-th:nth-child(9) { width: 200px; }
-th:nth-child(10) { width: 70px; }
+th:nth-child(1), td:nth-child(1) { width: 50px; }
+th:nth-child(2), td:nth-child(2) { width: 100px; }
+th:nth-child(3), td:nth-child(3) { width: 130px; }
+th:nth-child(4), td:nth-child(4) { width: 150px; }
+th:nth-child(5), td:nth-child(5) { width: 80px; }
+th:nth-child(6), td:nth-child(6) { width: 60px; }
+th:nth-child(7), td:nth-child(7) { width: 110px; }
+th:nth-child(8), td:nth-child(8) { width: 100px; }
+th:nth-child(9), td:nth-child(9) { width: 200px; }
+th:nth-child(10), td:nth-child(10) { width: 70px; }

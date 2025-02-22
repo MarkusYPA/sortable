@@ -17,6 +17,16 @@ let prevSort = ''
 let sortBy = 'nothing'
 let ascend = true
 
+let table
+let tHead
+let tBody
+
+let paginationDiv
+let prevButton
+let nextButton
+
+export let heroesFiltered = []
+
 // Null values don't work in many sorting functions, so turn them to ''
 function nullsToEmpty(heroes) {
     heroes.forEach(hero => replaceNullsWithEmptyString(hero));
@@ -126,15 +136,7 @@ function makeTableBody(heroes) {
     return tbody
 }
 
-
-function heroes(heroes) {
-    // replace any null values with '' so sorting works
-    nullsToEmpty(heroes)
-    sortByColumn(heroes) // default sorting
-    makeBackground()
-
-    let heroesFiltered = heroes
-
+function makeSearchBar(table, heroes) {
     // searchbar
     const searchbar = document.createElement('input')
     searchbar.type = 'text'
@@ -155,10 +157,9 @@ function heroes(heroes) {
             tBody.remove();
             errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
             errorMessage.style.color = "red";
-            showedOnce = true;
         } else if (heroesFiltered.length > 0) {
             errorMessage.innerHTML = "";
-            sortByColumn(heroesFiltered, prevSort, ascend, false, sortBy);
+            sortByColumn(heroesFiltered, prevSort, ascend, sortBy);
             tBody.remove();
             tBody = makeTableBody(heroesFiltered);
             table.appendChild(tBody);
@@ -167,68 +168,30 @@ function heroes(heroes) {
         updatePagination();
     });
 
-    // make the table
-    const table = document.createElement('table')
-    table.id = 'hero-table'
+    return [searchbar, errorMessage]
+}
 
-    // table header
-    const tHead = makeTableHead()
-    table.appendChild(tHead);
-
-    // table body
-    let tBody = makeTableBody(heroesFiltered)
+function updateTable() {
+    tBody.remove();
+    tBody = makeTableBody(heroesFiltered);
     table.appendChild(tBody);
 
-    // Create container for table and pagination
-    const container = document.createElement('div');
-    container.className = 'table-container';
-
-    const titleBanner1 = document.createElement('h1')
-    titleBanner1.classList.add('title')
-    titleBanner1.innerHTML = "S U P E R"
-    titleBanner1.style.fontSize = '246px'
-    const titleBanner2 = document.createElement('h1')
-    titleBanner2.classList.add('title')
-    titleBanner2.innerHTML = "H E R O E S"
-    titleBanner2.style.fontSize = '200px'
-
-    container.appendChild(titleBanner1)
-    container.appendChild(titleBanner2)
-
-    // Add page size selector 
-    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
-    const searchAndPages = document.createElement('div')
-    searchAndPages.id = "search-and-pages"
-    searchAndPages.appendChild(searchbar)
-    searchAndPages.appendChild(sizeContainer);
-
-    container.appendChild(searchAndPages);
-    container.appendChild(errorMessage);
-    container.appendChild(table);
-
-    // calculate total pages and add pagination controls 
     const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
-    const { paginationDiv, prevButton, nextButton } = createPaginationControls(totalPages);
-    container.appendChild(paginationDiv);
+    currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
+    updatePagination();
+}
 
-    function updateTable() {
-        tBody.remove();
-        tBody = makeTableBody(heroesFiltered);
-        table.appendChild(tBody);
+function updatePagination() {
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+    paginationDiv.querySelector('span').textContent =
+        rowsPerPage === heroesFiltered.length
+            ? 'Showing all results'
+            : `Page ${currentPage} of ${totalPages}`;
+}
 
-        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
-        currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
-        updatePagination();
-    }
-
-    // Add event listener for page size selector
-    sizeSelect.addEventListener('change', (event) => {
-        const newSize = event.target.value;
-        rowsPerPage = newSize === 'all' ? heroes.length : parseInt(newSize);
-        currentPage = 1; // Reset to first page
-        updateTable();
-    });
-
+function addListeners() {
     // Add event listeners for pagination
     prevButton.addEventListener('click', () => {
         if (currentPage > 1) {
@@ -250,16 +213,7 @@ function heroes(heroes) {
         }
     });
 
-    function updatePagination() {
-        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage === totalPages;
-        paginationDiv.querySelector('span').textContent =
-            rowsPerPage === heroesFiltered.length
-                ? 'Showing all results'
-                : `Page ${currentPage} of ${totalPages}`;
-    }
-
+    // Listener for sorting
     tHead.addEventListener('click', (event) => {
         prevSort = sortBy
         sortBy = event.target.closest('th').dataset.col
@@ -269,5 +223,74 @@ function heroes(heroes) {
         table.appendChild(tBody);
         updatePagination();
     })
+}
+
+function heroes(heroes) {
+    // replace any null values with '' so sorting works
+    nullsToEmpty(heroes)
+    sortByColumn(heroes) // default sorting
+    makeBackground()
+
+    // make the table
+    table = document.createElement('table')
+    table.id = 'hero-table'
+
+    heroesFiltered = heroes
+    const [searchbar, errorMessage] = makeSearchBar(table, heroes)
+
+
+    // table header
+    tHead = makeTableHead()
+    table.appendChild(tHead);
+
+    // table body
+    tBody = makeTableBody(heroesFiltered)
+    table.appendChild(tBody);
+
+    // Create container for table and pagination
+    const container = document.createElement('div');
+    container.className = 'table-container';
+
+    const titleBanner1 = document.createElement('h1')
+    titleBanner1.classList.add('title')
+    titleBanner1.innerHTML = "S U P E R"
+    titleBanner1.style.fontSize = '234px'
+    const titleBanner2 = document.createElement('h1')
+    titleBanner2.classList.add('title')
+    titleBanner2.innerHTML = "H E R O E S"
+    titleBanner2.style.fontSize = '190px'
+
+    container.appendChild(titleBanner1)
+    container.appendChild(titleBanner2)
+
+    // Add page size selector 
+    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
+    const searchAndPages = document.createElement('div')
+    searchAndPages.id = "search-and-pages"
+    searchAndPages.appendChild(searchbar)
+    searchAndPages.appendChild(sizeContainer);
+
+    container.appendChild(searchAndPages);
+    container.appendChild(errorMessage);
+    container.appendChild(table);
+
+    // calculate total pages and add pagination controls 
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    [paginationDiv, prevButton, nextButton] = createPaginationControls(totalPages);
+    container.appendChild(paginationDiv);
+
+
+    // Add event listener for page size selector
+    sizeSelect.addEventListener('change', (event) => {
+        const newSize = event.target.value;
+        rowsPerPage = newSize === 'all' ? heroesFiltered.length : parseInt(newSize);
+        currentPage = 1; // Reset to first page        
+        updateTable();
+
+    });
+
+    addListeners()
+
     document.body.appendChild(container);
 }
+

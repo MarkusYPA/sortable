@@ -29,8 +29,8 @@ export function makeBackground() {
                 let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
 
                 // Generate gradient colors based on position
-                let hue = 20 + (x / canvas.width) * 50; // Hue varies from 0 to 360
-                let lightness = 20 + Math.cos(y * 0.01) * 2; // Lightness oscillates
+                let hue = 20 + (x / canvas.width) * 50;       // Hue varies
+                let lightness = 32 + Math.sin(y * 0.01) * 2;  // Lightness oscillates
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
