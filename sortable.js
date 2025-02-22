@@ -273,37 +273,35 @@ function heroes(heroes) {
     let showedOnce = false;
     let errorMessage = null;
 
-searchbar.addEventListener('input', (event) => {
-    const searchTerm = event.target.value;
-   
-    heroesFiltered = heroes.filter((hero) => 
-        hero.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    searchbar.addEventListener('input', (event) => {
+        const searchTerm = event.target.value;
 
-    //if not found --> remove head, body, show error. Else ---> add them back
-    if (heroesFiltered.length === 0 && !showedOnce) {
-        tHead.remove();
-        tBody.remove();
-        errorMessage = document.createElement('div');
-        errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
-        errorMessage.style.color = "red";
-        document.body.appendChild(errorMessage);
-        showedOnce = true;
-    } else if (heroesFiltered.length > 0) {
-        if (errorMessage) {
-            errorMessage.remove(); 
-            errorMessage = null;
+        heroesFiltered = heroes.filter((hero) =>
+            hero.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        //if not found --> remove head, body, show error. Else ---> add them back
+        if (heroesFiltered.length === 0 && !showedOnce) {
+            tBody.remove();
+            errorMessage = document.createElement('div');
+            errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
+            errorMessage.style.color = "red";
+            document.body.appendChild(errorMessage);
+            showedOnce = true;
+        } else if (heroesFiltered.length > 0) {
+            if (errorMessage) {
+                errorMessage.remove();
+                errorMessage = null;
+            }
+            showedOnce = false;
+
+            sortByColumn(heroesFiltered, false, sortBy);
+
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
         }
-        showedOnce = false;
-
-        sortByColumn(heroesFiltered, false, sortBy);
-
-        tBody.remove();
-        tBody = makeTableBody(heroesFiltered);
-        table.appendChild(tHead);
-        table.appendChild(tBody);
-    }
-});
+    });
 
     // make the table
     const table = document.createElement('table')
