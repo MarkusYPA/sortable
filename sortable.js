@@ -1,3 +1,7 @@
+import { createPageSizeSelector } from "./pageSelector.js";
+import { createPaginationControls } from "./pagination.js";
+import { sortByColumn, sortHeroes } from "./sorting.js";
+import { makeBackground } from "./background.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
@@ -6,18 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error("Error loading data:", error));
 });
 
-let icoAsc = true
-let nameAsc = true
-let fullNameAsc = true
-let pwrAsc = true
-let raceAsc = true
-let genderAsc = true
-let heightAsc = true
-let weightAsc = true
-let pobAsc = true
-let aligAsc = true
+let currentPage = 1;
+let rowsPerPage = 20;
 
-let sortBy = ''
+let prevSort = ''
+let sortBy = 'nothing'
+let ascend = true
+
+let table
+let tHead
+let tBody
+
+let paginationDiv
+let prevButton
+let nextButton
+
+export let heroesFiltered = []
 
 // Null values don't work in many sorting functions, so turn them to ''
 function nullsToEmpty(heroes) {
@@ -88,8 +96,11 @@ function arrToText(arr) {
 
 function makeTableBody(heroes) {
     const tbody = document.createElement("tbody");
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const paginatedHeroes = heroes.slice(startIndex, endIndex)
 
-    heroes.forEach(hero => {
+    paginatedHeroes.forEach(hero => {
         const row = document.createElement("tr");
 
         const values = [
@@ -125,180 +136,161 @@ function makeTableBody(heroes) {
     return tbody
 }
 
-// sum of power stats
-function allPwr(powerstats) {
-    let sum = 0
-    console.log(powerstats)
-    for (let val of Object.values(powerstats)) {
-        sum += val
-    }
-    return sum
+function makeSearchBar(table, heroes) {
+    // searchbar
+    const searchbar = document.createElement('input')
+    searchbar.type = 'text'
+    searchbar.placeholder = 'search by name'
+
+    //error variables
+    const errorMessage = document.createElement('div');
+    errorMessage.style.width = '100%'
+
+    searchbar.addEventListener('input', (event) => {
+        const searchTerm = event.target.value;
+
+        heroesFiltered = heroes.filter((hero) =>
+            hero.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (heroesFiltered.length === 0) {
+            tBody.remove();
+            errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
+            errorMessage.style.color = "red";
+        } else if (heroesFiltered.length > 0) {
+            errorMessage.innerHTML = "";
+            sortByColumn(heroesFiltered, prevSort, ascend, sortBy);
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+        }
+
+        updatePagination();
+    });
+
+    return [searchbar, errorMessage]
 }
 
-function cmToNum(str) {
-    if (str == undefined) return -1
-    let value = Number(str.match(/\d+/)[0])
+function updateTable() {
+    tBody.remove();
+    tBody = makeTableBody(heroesFiltered);
+    table.appendChild(tBody);
 
-    // The enormous are measured in meters 
-    if (str.slice(-2) != 'cm') value *= 100
-
-    return value
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
+    updatePagination();
 }
 
-function kgToNum(str) {
-    if (str == undefined) return -1
-    let value = Number(str.match(/\d+/)[0])
-
-    // The enormous are measured in tons 
-    if (str.slice(-2) != 'kg') value *= 1000
-
-    return value
+function updatePagination() {
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+    paginationDiv.querySelector('span').textContent =
+        rowsPerPage === heroesFiltered.length
+            ? 'Showing all results'
+            : `Page ${currentPage} of ${totalPages}`;
 }
 
-function aligToNum(align) {
-    switch (align) {
-        case 'good':
-            return -1
-        case 'neutral':
-            return 0
-        case 'bad':
-            return 1
-        default:
-            return 10
-    }
+function addListeners() {
+    // Add event listeners for pagination
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+            updatePagination();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+            updatePagination();
+        }
+    });
+
+    // Listener for sorting
+    tHead.addEventListener('click', (event) => {
+        prevSort = sortBy
+        sortBy = event.target.closest('th').dataset.col
+        ascend = sortHeroes(event, heroesFiltered, sortBy, prevSort, ascend)
+        tBody.remove()
+        tBody = makeTableBody(heroesFiltered)
+        table.appendChild(tBody);
+        updatePagination();
+    })
 }
-
-function sortByColumn(heroes, flipDirection = false, sortBy = '') {
-    switch (sortBy) {
-        case 'icon':
-            // sort ascending or descending
-            icoAsc ?
-                heroes.sort((a, b) => a.images.xs.localeCompare(b.images.xs)) :
-                heroes.sort((a, b) => b.images.xs.localeCompare(a.images.xs))
-            // sort again so undefined are last
-            heroes.sort((a, b) => (a.images.xs.includes('no-portrait') ? 1 : b.images.xs.includes('no-portrait') ? -1 : 0));
-            if (flipDirection) icoAsc = !icoAsc
-            break
-        case 'name':
-            nameAsc ?
-                heroes.sort((a, b) => a.name.localeCompare(b.name)) :
-                heroes.sort((a, b) => b.name.localeCompare(a.name))
-            heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0));
-            if (flipDirection) nameAsc = !nameAsc
-            break
-        case 'fullname':
-            fullNameAsc ?
-                heroes.sort((a, b) => a.biography.fullName.localeCompare(b.biography.fullName)) :
-                heroes.sort((a, b) => b.biography.fullName.localeCompare(a.biography.fullName))
-            heroes.sort((a, b) => (a.biography.fullName == '' ? 1 : b.biography.fullName == '' ? -1 : 0));
-            if (flipDirection) fullNameAsc = !fullNameAsc
-            break
-        case 'powerstats':
-            pwrAsc ?
-                heroes.sort((a, b) => allPwr(a.powerstats) - allPwr(b.powerstats)) :
-                heroes.sort((a, b) => allPwr(b.powerstats) - allPwr(a.powerstats))
-            // Probably no empties here
-            if (flipDirection) pwrAsc = !pwrAsc
-            break
-        case 'race':
-            raceAsc ?
-                heroes.sort((a, b) => a.appearance.race.localeCompare(b.appearance.race)) :
-                heroes.sort((a, b) => b.appearance.race.localeCompare(a.appearance.race))
-            heroes.sort((a, b) => (a.appearance.race == '' ? 1 : b.appearance.race == '' ? -1 : 0));
-            if (flipDirection) raceAsc = !raceAsc
-            break
-        case 'gender':
-            genderAsc ?
-                heroes.sort((a, b) => a.appearance.gender.localeCompare(b.appearance.gender)) :
-                heroes.sort((a, b) => b.appearance.gender.localeCompare(a.appearance.gender))
-            heroes.sort((a, b) => (a.appearance.gender == '-' ? 1 : b.appearance.gender == '-' ? -1 : 0));
-            if (flipDirection) genderAsc = !genderAsc
-            break
-        case 'height':
-            heightAsc ?
-                heroes.sort((a, b) => cmToNum(a.appearance.height[1]) - cmToNum(b.appearance.height[1])) :
-                heroes.sort((a, b) => cmToNum(b.appearance.height[1]) - cmToNum(a.appearance.height[1]))
-            heroes.sort((a, b) => (cmToNum(a.appearance.height[1]) <= 0 ? 1 : cmToNum(b.appearance.height[1]) <= 0 ? -1 : 0));
-            if (flipDirection) heightAsc = !heightAsc
-            break
-        case 'weight':
-            weightAsc ?
-                heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1])) :
-                heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
-            if (flipDirection) weightAsc = !weightAsc
-            break
-        case 'placeofbirth':
-            pobAsc ?
-                heroes.sort((a, b) => a.biography.placeOfBirth.localeCompare(b.biography.placeOfBirth)) :
-                heroes.sort((a, b) => b.biography.placeOfBirth.localeCompare(a.biography.placeOfBirth))
-            heroes.sort((a, b) => (a.biography.placeOfBirth == '-' ? 1 : b.biography.placeOfBirth == '-' ? -1 : 0));
-            if (flipDirection) pobAsc = !pobAsc
-            break
-        case 'alignement':
-            aligAsc ?
-                heroes.sort((a, b) => aligToNum(a.biography.alignment) - aligToNum(b.biography.alignment)) :
-                heroes.sort((a, b) => aligToNum(b.biography.alignment) - aligToNum(a.biography.alignment))
-            heroes.sort((a, b) => (a.biography.alignment == '-' ? 1 : b.biography.alignment == '-' ? -1 : 0));
-            if (flipDirection) aligAsc = !aligAsc
-            break
-        default:
-            heroes.sort((a, b) => a.name.localeCompare(b.name))
-            heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0));
-    }
-}
-
-
-function sortHeroes(event, heroes) {
-    const headCell = event.target.closest('th'); // Clicked header
-    if (!headCell) return; // Not a header cell
-    sortBy = headCell.dataset.col
-    sortByColumn(heroes, true, sortBy)
-}
-
 
 function heroes(heroes) {
     // replace any null values with '' so sorting works
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
-
-
-    let heroesFiltered = heroes
-
-    // searchbar
-    const searchbar = document.createElement('input')
-    searchbar.type = 'text'
-    document.body.appendChild(searchbar)
-
-    searchbar.addEventListener('input', (event) => {
-        const searchTerm = event.target.value;
-
-        heroesFiltered = heroes.filter((hero) => hero.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        sortByColumn(heroesFiltered, false, sortBy)
-
-        tBody.remove()
-        tBody = makeTableBody(heroesFiltered)
-        table.appendChild(tBody);
-    });
+    makeBackground()
 
     // make the table
-    const table = document.createElement('table')
+    table = document.createElement('table')
     table.id = 'hero-table'
 
+    heroesFiltered = heroes
+    const [searchbar, errorMessage] = makeSearchBar(table, heroes)
+
+
     // table header
-    const tHead = makeTableHead()
+    tHead = makeTableHead()
     table.appendChild(tHead);
 
     // table body
-    let tBody = makeTableBody(heroesFiltered)
+    tBody = makeTableBody(heroesFiltered)
     table.appendChild(tBody);
 
-    document.body.appendChild(table);
+    // Create container for table and pagination
+    const container = document.createElement('div');
+    container.className = 'table-container';
+
+    const titleBanner1 = document.createElement('h1')
+    titleBanner1.classList.add('title')
+    titleBanner1.innerHTML = "S U P E R"
+    titleBanner1.style.fontSize = '234px'
+    const titleBanner2 = document.createElement('h1')
+    titleBanner2.classList.add('title')
+    titleBanner2.innerHTML = "H E R O E S"
+    titleBanner2.style.fontSize = '190px'
+
+    container.appendChild(titleBanner1)
+    container.appendChild(titleBanner2)
+
+    // Add page size selector 
+    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
+    const searchAndPages = document.createElement('div')
+    searchAndPages.id = "search-and-pages"
+    searchAndPages.appendChild(searchbar)
+    searchAndPages.appendChild(sizeContainer);
+
+    container.appendChild(searchAndPages);
+    container.appendChild(errorMessage);
+    container.appendChild(table);
+
+    // calculate total pages and add pagination controls 
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    [paginationDiv, prevButton, nextButton] = createPaginationControls(totalPages);
+    container.appendChild(paginationDiv);
 
 
-    tHead.addEventListener('click', (event) => {
-        sortHeroes(event, heroesFiltered)
-        tBody.remove()
-        tBody = makeTableBody(heroesFiltered)
-        table.appendChild(tBody);
-    })
+    // Add event listener for page size selector
+    sizeSelect.addEventListener('change', (event) => {
+        const newSize = event.target.value;
+        rowsPerPage = newSize === 'all' ? heroesFiltered.length : parseInt(newSize);
+        currentPage = 1; // Reset to first page        
+        updateTable();
+
+    });
+
+    addListeners()
+
+    document.body.appendChild(container);
 }
+

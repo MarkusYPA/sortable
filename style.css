@@ -1,9 +1,82 @@
-td {
-    max-width: 200px;
-    word-wrap: break-word;
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
+body {
+    display: flex;
+    justify-content: center;
+    /* background-color: rgb(164, 231, 225); */
+    background-color: rgb(47, 34, 55);
+    color: white;
+    font-family: system-ui, sans-serif;
 }
 
-/* powerstats wide enough */
-td:nth-child(4) {
-    min-width: 150px;
+h1 {
+    font-family: 'Righteous', system-ui, sans-serif;
 }
+
+
+.table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    /* width: max-content; */
+    width: 1050px;
+}
+
+.table-container h1 {
+    width: 100%;
+    text-align: justify;
+    text-align-last: justify;
+    margin: 0;
+    padding: 0;
+}
+
+/* .table-container h1::after{ /* hack added for Safari */
+/*     content: "";
+    display: inline-block;
+    width: 100%;
+}
+ */
+
+
+#search-and-pages {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    justify-content: left;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 5px 25px;
+    max-width: max-content;
+    background-color: rgba(31, 32, 36, 0.859);
+    padding: 10px;
+    table-layout: fixed;
+}
+
+th {
+    cursor: pointer;
+}
+
+th:hover,
+th:hover ~ td {
+    color: rgb(255, 172, 99); /* Change this to your desired color */
+}
+
+td {
+    table-layout: fixed;
+    overflow-wrap: break-word;
+}
+
+/* column widths */
+th:nth-child(1), td:nth-child(1) { width: 50px; }
+th:nth-child(2), td:nth-child(2) { width: 100px; }
+th:nth-child(3), td:nth-child(3) { width: 130px; }
+th:nth-child(4), td:nth-child(4) { width: 150px; }
+th:nth-child(5), td:nth-child(5) { width: 80px; }
+th:nth-child(6), td:nth-child(6) { width: 60px; }
+th:nth-child(7), td:nth-child(7) { width: 110px; }
+th:nth-child(8), td:nth-child(8) { width: 100px; }
+th:nth-child(9), td:nth-child(9) { width: 200px; }
+th:nth-child(10), td:nth-child(10) { width: 70px; }
