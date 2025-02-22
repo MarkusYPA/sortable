@@ -1,3 +1,10 @@
+.table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+}
+
 table {
     border-collapse: separate; /* Allows border-spacing to work */
     border-spacing: 5px 5px;  /* Space between columns (10px) and rows (5px) */
