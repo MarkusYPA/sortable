@@ -6,6 +6,18 @@ body {
     color: white;
 }
 
+.table-container h1 {
+    width: 100%;
+    text-align: justify;
+    text-align-last: justify;
+}
+
+.table-container h1::after{ /* hack added for Safari */
+    content: "";
+    display: inline-block;
+    width: 100%;
+ }
+
 
 .table-container {
     display: flex;

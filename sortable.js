@@ -1,3 +1,6 @@
+import { createPageSizeSelector } from "./pageSelector.js";
+import { createPaginationControls } from "./pagination.js";
+
 let currentPage = 1;
 let rowsPerPage = 20;
 
@@ -41,52 +44,6 @@ function nullsToEmpty(heroes) {
             }
         }
     }
-}
-// Create a dropdown to select the number of items per page
-function createPageSizeSelector() {
-    const sizeSelect = document.createElement("select");
-    sizeSelect.className = "page-size-select";
-
-    const sizes = [10, 20, 50, 100, "all"];
-    sizes.forEach(size => {
-        const option = document.createElement("option");
-        option.value = size;
-        option.textContent = size === "all" ? "All results" : size;
-        if (size === 20) option.selected = true;
-        sizeSelect.appendChild(option);
-    });
-    const label = document.createElement('label');
-    label.textContent = 'Items per page: ';
-
-    const container = document.createElement('div');
-    container.className = 'page-size-container';
-    container.appendChild(label);
-    container.appendChild(sizeSelect);
-
-    return { container, sizeSelect };
-}
-
-
-function createPaginationControls(totalPages) {
-    const paginationDiv = document.createElement("div");
-    paginationDiv.className = "pagination";
-    // prev button
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous";
-    prevButton.disabled = currentPage === 1;
-    // next button
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next";
-    nextButton.disabled = currentPage === totalPages;
-    // page indicator
-    const pageInfo = document.createElement("span");
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-
-    paginationDiv.appendChild(prevButton);
-    paginationDiv.appendChild(pageInfo);
-    paginationDiv.appendChild(nextButton);
-
-    return { paginationDiv, prevButton, nextButton };
 }
 
 function makeTableHead() {
@@ -276,6 +233,7 @@ function sortByColumn(heroes, flipDirection = false, sortBy = '') {
             weightAsc ?
                 heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1])) :
                 heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
+            heroes.sort((a, b) => (kgToNum(a.appearance.weight[1]) <= 0 ? 1 : kgToNum(b.appearance.weight[1]) <= 0 ? -1 : 0));
             if (flipDirection) weightAsc = !weightAsc
             break
         case 'placeofbirth':
@@ -370,15 +328,28 @@ function heroes(heroes) {
     const container = document.createElement('div');
     container.className = 'table-container';
 
+    const titleBanner = document.createElement('h1')
+    titleBanner.classList.add('title')
+    //titleBanner.innerHTML = "S U P E R H E R O E S"
+    //titleBanner.textContent = "S U P E R H E R O E S"
+    titleBanner.innerHTML = "SUPERHEROES"
+    titleBanner.textContent = "SUPERHEROES"
+
+
+    container.appendChild(titleBanner)
+
+    // Add page size selector 
     const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
     const searchAndPages = document.createElement('div')
     searchAndPages.id = "search-and-pages"
     searchAndPages.appendChild(searchbar)
     searchAndPages.appendChild(sizeContainer);
+
     container.appendChild(searchAndPages);
 
     container.appendChild(table);
-    // Add pagination controls
+
+    // calculate total pages and add pagination controls 
     const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
     const { paginationDiv, prevButton, nextButton } = createPaginationControls(totalPages);
     container.appendChild(paginationDiv);
