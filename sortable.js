@@ -477,7 +477,7 @@ function makeBackground() {
 
                 // Generate gradient colors based on position
                 let hue = 20 + (x / canvas.width) * 50; // Hue varies from 0 to 360
-                let lightness = 15 + Math.sin(y * 0.01) * 5; // Lightness oscillates
+                let lightness = 18 + Math.cos(y * 0.01) * 2; // Lightness oscillates
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
