@@ -312,13 +312,11 @@ function heroes(heroes) {
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
 
-
     let heroesFiltered = heroes
 
     // searchbar
     const searchbar = document.createElement('input')
-    searchbar.type = 'text'
-    document.body.appendChild(searchbar)
+    searchbar.type = 'text'    
 
     //error variables
     let showedOnce = false;
@@ -368,10 +366,14 @@ function heroes(heroes) {
 
     // Create container for table and pagination
     const container = document.createElement('div');
-    container.className = 'table-container';
+    container.className = 'table-container';      
 
     const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
-    container.appendChild(sizeContainer);
+    const searchAndPages = document.createElement('div')
+    searchAndPages.id = "search-and-pages"  
+    searchAndPages.appendChild(searchbar)
+    searchAndPages.appendChild(sizeContainer);
+    container.appendChild(searchAndPages);
 
     container.appendChild(table);
     // Add pagination controls

@@ -2,12 +2,22 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    justify-content: center;
+    align-items: center;
+    width: max-content;
+}
+
+#search-and-pages {
+    /* flex: 1; */
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    justify-content: left;
 }
 
 table {
     border-collapse: separate; /* Allows border-spacing to work */
     border-spacing: 5px 5px;  /* Space between columns (10px) and rows (5px) */
+    max-width: max-content;
 }
 
 td {
