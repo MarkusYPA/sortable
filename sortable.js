@@ -1,3 +1,6 @@
+import { createPageSizeSelector } from "./pageSelector.js";
+import { createPaginationControls } from "./pagination.js";
+
 let currentPage = 1;
 let rowsPerPage = 20;
 
@@ -42,52 +45,52 @@ function nullsToEmpty(heroes) {
         }
     }
 }
-// Create a dropdown to select the number of items per page
-function createPageSizeSelector() {
-    const sizeSelect = document.createElement("select");
-    sizeSelect.className = "page-size-select";
+// // Create a dropdown to select the number of items per page
+// function createPageSizeSelector() {
+//     const sizeSelect = document.createElement("select");
+//     sizeSelect.className = "page-size-select";
 
-    const sizes = [10, 20, 50, 100, "all"];
-    sizes.forEach(size => {
-        const option = document.createElement("option");
-        option.value = size;
-        option.textContent = size === "all" ? "All results" : size;
-        if (size === 20) option.selected = true;
-        sizeSelect.appendChild(option);
-    });
-    const label = document.createElement('label');
-    label.textContent = 'Items per page: ';
+//     const sizes = [10, 20, 50, 100, "all"];
+//     sizes.forEach(size => {
+//         const option = document.createElement("option");
+//         option.value = size;
+//         option.textContent = size === "all" ? "All results" : size;
+//         if (size === 20) option.selected = true;
+//         sizeSelect.appendChild(option);
+//     });
+//     const label = document.createElement('label');
+//     label.textContent = 'Items per page: ';
     
-    const container = document.createElement('div');
-    container.className = 'page-size-container';
-    container.appendChild(label);
-    container.appendChild(sizeSelect);
+//     const container = document.createElement('div');
+//     container.className = 'page-size-container';
+//     container.appendChild(label);
+//     container.appendChild(sizeSelect);
     
-    return { container, sizeSelect }; 
-}
+//     return { container, sizeSelect }; 
+// }
 
 
-function createPaginationControls(totalPages) {
-    const paginationDiv = document.createElement("div");
-    paginationDiv.className = "pagination";
-    // prev button
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous";
-    prevButton.disabled = currentPage === 1;
-    // next button
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Next";
-    nextButton.disabled = currentPage === totalPages;
-    // page indicator
-    const pageInfo = document.createElement("span");
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+// function createPaginationControls(totalPages) {
+//     const paginationDiv = document.createElement("div");
+//     paginationDiv.className = "pagination";
+//     // prev button
+//     const prevButton = document.createElement("button");
+//     prevButton.textContent = "Previous";
+//     prevButton.disabled = currentPage === 1;
+//     // next button
+//     const nextButton = document.createElement("button");
+//     nextButton.textContent = "Next";
+//     nextButton.disabled = currentPage === totalPages;
+//     // page indicator
+//     const pageInfo = document.createElement("span");
+//     pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
-    paginationDiv.appendChild(prevButton);
-    paginationDiv.appendChild(pageInfo);
-    paginationDiv.appendChild(nextButton);
+//     paginationDiv.appendChild(prevButton);
+//     paginationDiv.appendChild(pageInfo);
+//     paginationDiv.appendChild(nextButton);
 
-    return { paginationDiv, prevButton, nextButton };
-}
+//     return { paginationDiv, prevButton, nextButton };
+// }
 
 function makeTableHead() {
     const tHead = document.createElement("thead");
