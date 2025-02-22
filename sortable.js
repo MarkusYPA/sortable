@@ -19,6 +19,8 @@ let weightAsc = true
 let pobAsc = true
 let aligAsc = true
 
+let sortBy = ''
+
 // Null values don't work in many sorting functions, so turn them to ''
 function nullsToEmpty(heroes) {
     heroes.forEach(hero => replaceNullsWithEmptyString(hero));
@@ -194,10 +196,10 @@ function kgToNum(str) {
 }
 
 function aligToNum(align) {
-    switch(align){
-        case'good':
+    switch (align) {
+        case 'good':
             return -1
-        case'neutral':
+        case 'neutral':
             return 0
         case 'bad':
             return 1
@@ -206,8 +208,8 @@ function aligToNum(align) {
     }
 }
 
-function sortByColumn(heroes, column = '') {
-    switch (column) {
+function sortByColumn(heroes, flipDirection = false, sortBy = '') {
+    switch (sortBy) {
         case 'icon':
             // sort ascending or descending
             icoAsc ?
@@ -215,70 +217,69 @@ function sortByColumn(heroes, column = '') {
                 heroes.sort((a, b) => b.images.xs.localeCompare(a.images.xs))
             // sort again so undefined are last
             heroes.sort((a, b) => (a.images.xs.includes('no-portrait') ? 1 : b.images.xs.includes('no-portrait') ? -1 : 0));
-            icoAsc = !icoAsc
+            if (flipDirection) icoAsc = !icoAsc
             break
         case 'name':
             nameAsc ?
                 heroes.sort((a, b) => a.name.localeCompare(b.name)) :
                 heroes.sort((a, b) => b.name.localeCompare(a.name))
             heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0));
-            nameAsc = !nameAsc
+            if (flipDirection) nameAsc = !nameAsc
             break
         case 'fullname':
             fullNameAsc ?
                 heroes.sort((a, b) => a.biography.fullName.localeCompare(b.biography.fullName)) :
                 heroes.sort((a, b) => b.biography.fullName.localeCompare(a.biography.fullName))
             heroes.sort((a, b) => (a.biography.fullName == '' ? 1 : b.biography.fullName == '' ? -1 : 0));
-            fullNameAsc = !fullNameAsc
+            if (flipDirection) fullNameAsc = !fullNameAsc
             break
         case 'powerstats':
             pwrAsc ?
                 heroes.sort((a, b) => allPwr(a.powerstats) - allPwr(b.powerstats)) :
                 heroes.sort((a, b) => allPwr(b.powerstats) - allPwr(a.powerstats))
             // Probably no empties here
-            pwrAsc = !pwrAsc
+            if (flipDirection) pwrAsc = !pwrAsc
             break
         case 'race':
             raceAsc ?
                 heroes.sort((a, b) => a.appearance.race.localeCompare(b.appearance.race)) :
                 heroes.sort((a, b) => b.appearance.race.localeCompare(a.appearance.race))
             heroes.sort((a, b) => (a.appearance.race == '' ? 1 : b.appearance.race == '' ? -1 : 0));
-            raceAsc = !raceAsc
+            if (flipDirection) raceAsc = !raceAsc
             break
         case 'gender':
             genderAsc ?
                 heroes.sort((a, b) => a.appearance.gender.localeCompare(b.appearance.gender)) :
                 heroes.sort((a, b) => b.appearance.gender.localeCompare(a.appearance.gender))
             heroes.sort((a, b) => (a.appearance.gender == '-' ? 1 : b.appearance.gender == '-' ? -1 : 0));
-            genderAsc = !genderAsc
+            if (flipDirection) genderAsc = !genderAsc
             break
         case 'height':
             heightAsc ?
                 heroes.sort((a, b) => cmToNum(a.appearance.height[1]) - cmToNum(b.appearance.height[1])) :
                 heroes.sort((a, b) => cmToNum(b.appearance.height[1]) - cmToNum(a.appearance.height[1]))
             heroes.sort((a, b) => (cmToNum(a.appearance.height[1]) <= 0 ? 1 : cmToNum(b.appearance.height[1]) <= 0 ? -1 : 0));
-            heightAsc = !heightAsc
+            if (flipDirection) heightAsc = !heightAsc
             break
         case 'weight':
             weightAsc ?
                 heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1])) :
                 heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
-            heroes.sort((a, b) => (kgToNum(a.appearance.weight[1]) <= 0 ? 1 : kgToNum(b.appearance.weight[1]) <= 0 ? -1 : 0));
-            weightAsc = !weightAsc
+            if (flipDirection) weightAsc = !weightAsc
             break
         case 'placeofbirth':
             pobAsc ?
                 heroes.sort((a, b) => a.biography.placeOfBirth.localeCompare(b.biography.placeOfBirth)) :
                 heroes.sort((a, b) => b.biography.placeOfBirth.localeCompare(a.biography.placeOfBirth))
             heroes.sort((a, b) => (a.biography.placeOfBirth == '-' ? 1 : b.biography.placeOfBirth == '-' ? -1 : 0));
-            pobAsc = !pobAsc
+            if (flipDirection) pobAsc = !pobAsc
             break
         case 'alignement':
             aligAsc ?
                 heroes.sort((a, b) => aligToNum(a.biography.alignment) - aligToNum(b.biography.alignment)) :
                 heroes.sort((a, b) => aligToNum(b.biography.alignment) - aligToNum(a.biography.alignment))
             heroes.sort((a, b) => (a.biography.alignment == '-' ? 1 : b.biography.alignment == '-' ? -1 : 0));
-            aligAsc = !aligAsc
+            if (flipDirection) aligAsc = !aligAsc
             break
         default:
             heroes.sort((a, b) => a.name.localeCompare(b.name))
@@ -290,8 +291,8 @@ function sortByColumn(heroes, column = '') {
 function sortHeroes(event, heroes) {
     const headCell = event.target.closest('th'); // Clicked header
     if (!headCell) return; // Not a header cell
-    const column = headCell.dataset.col
-    sortByColumn(heroes, column)
+    sortBy = headCell.dataset.col
+    sortByColumn(heroes, true, sortBy)
 }
 
 
@@ -300,11 +301,24 @@ function heroes(heroes) {
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
 
-    /*     for (let hero of heroes) {
-            if (hero.images.xs.includes('no-portrait')) {
-                console.log(hero.name, hero.images.xs)
-            }
-        } */
+
+    let heroesFiltered = heroes
+
+    // searchbar
+    const searchbar = document.createElement('input')
+    searchbar.type = 'text'
+    document.body.appendChild(searchbar)
+
+    searchbar.addEventListener('input', (event) => {
+        const searchTerm = event.target.value;
+
+        heroesFiltered = heroes.filter((hero) => hero.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        sortByColumn(heroesFiltered, false, sortBy)
+
+        tBody.remove()
+        tBody = makeTableBody(heroesFiltered)
+        table.appendChild(tBody);
+    });
 
     // make the table
     const table = document.createElement('table')
@@ -315,7 +329,7 @@ function heroes(heroes) {
     table.appendChild(tHead);
 
     // table body
-    let tBody = makeTableBody(heroes)
+    let tBody = makeTableBody(heroesFiltered)
     table.appendChild(tBody);
 
     // document.body.appendChild(table);
@@ -324,7 +338,7 @@ function heroes(heroes) {
     container.className = 'table-container';
     container.appendChild(table);
     // Add pagination controls
-    const totalPages = Math.ceil(heroes.length / rowsPerPage);
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
     const { paginationDiv, prevButton, nextButton } = createPaginationControls(totalPages);
     container.appendChild(paginationDiv);
 
@@ -333,7 +347,7 @@ function heroes(heroes) {
         if (currentPage > 1) {
             currentPage--;
             tBody.remove();
-            tBody = makeTableBody(heroes);
+            tBody = makeTableBody(heroesFiltered);
             table.appendChild(tBody);
             updatePagination();
         }
@@ -343,7 +357,7 @@ function heroes(heroes) {
         if (currentPage < totalPages) {
             currentPage++;
             tBody.remove();
-            tBody = makeTableBody(heroes);
+            tBody = makeTableBody(heroesFiltered);
             table.appendChild(tBody);
             updatePagination();
         }
@@ -359,19 +373,11 @@ function heroes(heroes) {
 
 
     tHead.addEventListener('click', (event) => {
-        sortHeroes(event, heroes)
+        sortHeroes(event, heroesFiltered)
         tBody.remove()
-        tBody = makeTableBody(heroes)
+        tBody = makeTableBody(heroesFiltered)
         table.appendChild(tBody);
         updatePagination();
     })
     document.body.appendChild(container);
-    // rough example of search box behavior
-    /* searchbox.addEventListener('keypress', (event) => {
-        const searchfor = 'lasjd' // get input from searchbox
-        heroes.filter((hero) => hero.name.toLowerCase.includes(searchfor.toLowerCase))
-        tBody.remove()
-        tBody = makeTableBody(heroes)
-        table.appendChild(tBody)
-    }) */
 }
