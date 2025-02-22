@@ -266,6 +266,10 @@ function heroes(heroes) {
             }
         } */
 
+    const txtinput = document.createElement('input')
+    txtinput.type = 'text'
+    document.body.appendChild(txtinput)
+
     // make the table
     const table = document.createElement('table')
     table.id = 'hero-table'
