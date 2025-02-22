@@ -1,9 +1,20 @@
+table {
+    border-collapse: separate; /* Allows border-spacing to work */
+    border-spacing: 5px 5px;  /* Space between columns (10px) and rows (5px) */
+}
+
 td {
-    max-width: 200px;
     word-wrap: break-word;
 }
 
-/* powerstats wide enough */
-td:nth-child(4) {
-    min-width: 150px;
-}
+/* column widths */
+th:nth-child(1) { width: 50px; }
+th:nth-child(2) { width: 100px; }
+th:nth-child(3) { width: 130px; }
+th:nth-child(4) { width: 150px; }
+th:nth-child(5) { width: 80px; }
+th:nth-child(6) { width: 60px; }
+th:nth-child(7) { width: 110px; }
+th:nth-child(8) { width: 100px; }
+th:nth-child(9) { width: 200px; }
+th:nth-child(10) { width: 70px; }
