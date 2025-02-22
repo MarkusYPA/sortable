@@ -1,9 +1,7 @@
 import { createPageSizeSelector } from "./pageSelector.js";
 import { createPaginationControls } from "./pagination.js";
 import { sortByColumn, sortHeroes } from "./sorting.js";
-
-let currentPage = 1;
-let rowsPerPage = 20;
+import { makeBackground } from "./background.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
@@ -12,16 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error("Error loading data:", error));
 });
 
-let icoAsc = true
-let nameAsc = true
-let fullNameAsc = true
-let pwrAsc = true
-let raceAsc = true
-let genderAsc = true
-let heightAsc = true
-let weightAsc = true
-let pobAsc = true
-let aligAsc = true
+let currentPage = 1;
+let rowsPerPage = 20;
 
 let prevSort = ''
 let sortBy = 'nothing'
@@ -137,13 +127,10 @@ function makeTableBody(heroes) {
 }
 
 
-
-
 function heroes(heroes) {
     // replace any null values with '' so sorting works
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
-
     makeBackground()
 
     let heroesFiltered = heroes
@@ -176,6 +163,8 @@ function heroes(heroes) {
             tBody = makeTableBody(heroesFiltered);
             table.appendChild(tBody);
         }
+
+        updatePagination();
     });
 
     // make the table
@@ -281,54 +270,4 @@ function heroes(heroes) {
         updatePagination();
     })
     document.body.appendChild(container);
-}
-
-function makeBackground() {
-    // Create and append the canvas dynamically
-    const canvas = document.createElement("canvas");
-    document.body.appendChild(canvas);
-
-    // Set canvas as a background
-    canvas.style.position = "fixed";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
-    canvas.style.zIndex = "-1"; // Send it to the background
-
-    const ctx = canvas.getContext("2d");
-
-    // Set canvas size to match window
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        drawHalftone();
-    }
-
-    const dotSpacing = 40; // Spacing between dots
-    const maxRadius = 25;  // Maximum dot radius
-
-    function drawHalftone() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (let y = 0; y < canvas.height + maxRadius; y += dotSpacing) {
-            for (let x = 0; x < canvas.width + maxRadius; x += dotSpacing) {
-                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
-
-                // Generate gradient colors based on position
-                let hue = 20 + (x / canvas.width) * 50; // Hue varies from 0 to 360
-                let lightness = 18 + Math.cos(y * 0.01) * 2; // Lightness oscillates
-
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                //ctx.fillStyle = "#cbe8bb";
-                ctx.fillStyle = `hsl(${hue}, 100%, ${lightness}%)`;
-                ctx.fill();
-            }
-        }
-        ctx.restore();
-    }
-
-    // Resize and redraw on window resize
-    window.addEventListener("resize", resizeCanvas);
-
-    resizeCanvas();
 }
