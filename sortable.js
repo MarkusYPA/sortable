@@ -1,3 +1,5 @@
+let currentPage = 1;
+let rowsPerPage = 20;
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
@@ -39,6 +41,52 @@ function nullsToEmpty(heroes) {
             }
         }
     }
+}
+// Create a dropdown to select the number of items per page
+function createPageSizeSelector() {
+    const sizeSelect = document.createElement("select");
+    sizeSelect.className = "page-size-select";
+
+    const sizes = [10, 20, 50, 100, "all"];
+    sizes.forEach(size => {
+        const option = document.createElement("option");
+        option.value = size;
+        option.textContent = size === "all" ? "All results" : size;
+        if (size === 20) option.selected = true;
+        sizeSelect.appendChild(option);
+    });
+    const label = document.createElement('label');
+    label.textContent = 'Items per page: ';
+    
+    const container = document.createElement('div');
+    container.className = 'page-size-container';
+    container.appendChild(label);
+    container.appendChild(sizeSelect);
+    
+    return { container, sizeSelect }; 
+}
+
+
+function createPaginationControls(totalPages) {
+    const paginationDiv = document.createElement("div");
+    paginationDiv.className = "pagination";
+    // prev button
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    // next button
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    // page indicator
+    const pageInfo = document.createElement("span");
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+    paginationDiv.appendChild(prevButton);
+    paginationDiv.appendChild(pageInfo);
+    paginationDiv.appendChild(nextButton);
+
+    return { paginationDiv, prevButton, nextButton };
 }
 
 function makeTableHead() {
@@ -88,8 +136,11 @@ function arrToText(arr) {
 
 function makeTableBody(heroes) {
     const tbody = document.createElement("tbody");
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const paginatedHeroes = heroes.slice(startIndex, endIndex)
 
-    heroes.forEach(hero => {
+    paginatedHeroes.forEach(hero => {
         const row = document.createElement("tr");
 
         const values = [
@@ -292,7 +343,69 @@ function heroes(heroes) {
     let tBody = makeTableBody(heroesFiltered)
     table.appendChild(tBody);
 
-    document.body.appendChild(table);
+    // Create container for table and pagination
+    const container = document.createElement('div');
+    container.className = 'table-container';
+
+    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
+    container.appendChild(sizeContainer);
+
+    container.appendChild(table);
+    // Add pagination controls
+    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+    const { paginationDiv, prevButton, nextButton } = createPaginationControls(totalPages);
+    container.appendChild(paginationDiv);
+
+    function updateTable() {
+        tBody.remove();
+        tBody = makeTableBody(heroesFiltered);
+        table.appendChild(tBody);
+        
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+        currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
+        updatePagination();
+    }
+
+    // Add event listener for page size selector
+    sizeSelect.addEventListener('change', (event) => {
+        const newSize = event.target.value;
+        rowsPerPage = newSize === 'all' ? heroes.length : parseInt(newSize);
+        currentPage = 1; // Reset to first page
+        updateTable();
+    });
+
+     // Add event listeners for pagination
+     prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+            updatePagination();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+            updatePagination();
+        }
+    });
+
+    function updatePagination() {
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
+        paginationDiv.querySelector('span').textContent = 
+            rowsPerPage === heroesFiltered.length 
+                ? 'Showing all results' 
+                : `Page ${currentPage} of ${totalPages}`;
+    }
+    // TODO: dropdown (<select> input) to select size of table
+    // TODO: search box
 
 
     tHead.addEventListener('click', (event) => {
@@ -300,5 +413,7 @@ function heroes(heroes) {
         tBody.remove()
         tBody = makeTableBody(heroesFiltered)
         table.appendChild(tBody);
+        updatePagination();
     })
+    document.body.appendChild(container);
 }
