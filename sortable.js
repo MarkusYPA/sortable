@@ -42,6 +42,7 @@ function nullsToEmpty(heroes) {
         }
     }
 }
+// Create a dropdown to select the number of items per page
 function createPageSizeSelector() {
     const sizeSelect = document.createElement("select");
     sizeSelect.className = "page-size-select";
@@ -54,7 +55,17 @@ function createPageSizeSelector() {
         if (size === 20) option.selected = true;
         sizeSelect.appendChild(option);
     });
+    const label = document.createElement('label');
+    label.textContent = 'Items per page: ';
+    
+    const container = document.createElement('div');
+    container.className = 'page-size-container';
+    container.appendChild(label);
+    container.appendChild(sizeSelect);
+    
+    return { container, sizeSelect }; 
 }
+
 
 function createPaginationControls(totalPages) {
     const paginationDiv = document.createElement("div");
@@ -332,15 +343,36 @@ function heroes(heroes) {
     let tBody = makeTableBody(heroesFiltered)
     table.appendChild(tBody);
 
-    // document.body.appendChild(table);
     // Create container for table and pagination
     const container = document.createElement('div');
     container.className = 'table-container';
+
+    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
+    container.appendChild(sizeContainer);
+
     container.appendChild(table);
     // Add pagination controls
     const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
     const { paginationDiv, prevButton, nextButton } = createPaginationControls(totalPages);
     container.appendChild(paginationDiv);
+
+    function updateTable() {
+        tBody.remove();
+        tBody = makeTableBody(heroesFiltered);
+        table.appendChild(tBody);
+        
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+        currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
+        updatePagination();
+    }
+
+    // Add event listener for page size selector
+    sizeSelect.addEventListener('change', (event) => {
+        const newSize = event.target.value;
+        rowsPerPage = newSize === 'all' ? heroes.length : parseInt(newSize);
+        currentPage = 1; // Reset to first page
+        updateTable();
+    });
 
      // Add event listeners for pagination
      prevButton.addEventListener('click', () => {
@@ -364,9 +396,13 @@ function heroes(heroes) {
     });
 
     function updatePagination() {
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
         prevButton.disabled = currentPage === 1;
         nextButton.disabled = currentPage === totalPages;
-        paginationDiv.querySelector('span').textContent = `Page ${currentPage} of ${totalPages}`;
+        paginationDiv.querySelector('span').textContent = 
+            rowsPerPage === heroesFiltered.length 
+                ? 'Showing all results' 
+                : `Page ${currentPage} of ${totalPages}`;
     }
     // TODO: dropdown (<select> input) to select size of table
     // TODO: search box
