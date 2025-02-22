@@ -1,22 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
 body {
     display: flex;
     justify-content: center;
     /* background-color: rgb(164, 231, 225); */
     background-color: rgb(31, 24, 35);
     color: white;
+    font-family: system-ui, sans-serif;
 }
 
-.table-container h1 {
-    width: 100%;
-    text-align: justify;
-    text-align-last: justify;
+h1 {
+    font-family: 'Righteous', system-ui, sans-serif;
 }
-
-.table-container h1::after{ /* hack added for Safari */
-    content: "";
-    display: inline-block;
-    width: 100%;
- }
 
 
 .table-container {
@@ -26,6 +21,23 @@ body {
     align-items: center;
     width: max-content;
 }
+
+.table-container h1 {
+    width: 100%;
+    font-size: 200px;
+    text-align: justify;
+    text-align-last: justify;
+    margin: 0;
+    padding: 0;
+}
+
+/* .table-container h1::after{ /* hack added for Safari */
+/*     content: "";
+    display: inline-block;
+    width: 100%;
+}
+ */
+
 
 #search-and-pages {
     /* flex: 1; */

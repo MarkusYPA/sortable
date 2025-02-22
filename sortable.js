@@ -277,6 +277,7 @@ function heroes(heroes) {
     // searchbar
     const searchbar = document.createElement('input')
     searchbar.type = 'text'
+    searchbar.placeholder = 'search by name'
 
     //error variables
     let showedOnce = false;
@@ -328,15 +329,15 @@ function heroes(heroes) {
     const container = document.createElement('div');
     container.className = 'table-container';
 
-    const titleBanner = document.createElement('h1')
-    titleBanner.classList.add('title')
-    //titleBanner.innerHTML = "S U P E R H E R O E S"
-    //titleBanner.textContent = "S U P E R H E R O E S"
-    titleBanner.innerHTML = "SUPERHEROES"
-    titleBanner.textContent = "SUPERHEROES"
+    const titleBanner1 = document.createElement('h1')
+    titleBanner1.classList.add('title')
+    titleBanner1.innerHTML = "S U P E R"
+    const titleBanner2 = document.createElement('h1')
+    titleBanner2.classList.add('title')
+    titleBanner2.innerHTML = "H E R O E S"
 
-
-    container.appendChild(titleBanner)
+    container.appendChild(titleBanner1)
+    container.appendChild(titleBanner2)
 
     // Add page size selector 
     const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
@@ -402,8 +403,6 @@ function heroes(heroes) {
                 ? 'Showing all results'
                 : `Page ${currentPage} of ${totalPages}`;
     }
-    // TODO: dropdown (<select> input) to select size of table
-    // TODO: search box
 
 
     tHead.addEventListener('click', (event) => {
