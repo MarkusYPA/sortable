@@ -154,10 +154,10 @@ function kgToNum(str) {
 }
 
 function aligToNum(align) {
-    switch(align){
-        case'good':
+    switch (align) {
+        case 'good':
             return -1
-        case'neutral':
+        case 'neutral':
             return 0
         case 'bad':
             return 1
@@ -266,9 +266,25 @@ function heroes(heroes) {
             }
         } */
 
-    const txtinput = document.createElement('input')
-    txtinput.type = 'text'
-    document.body.appendChild(txtinput)
+
+    let heroesFiltered = heroes
+
+    // searchbar
+    const searchbar = document.createElement('input')
+    searchbar.type = 'text'
+    document.body.appendChild(searchbar)
+
+    searchbar.addEventListener('input', (event) => {
+        const searchTerm = event.target.value;
+        console.log('Current input:', searchTerm);
+        // Add any custom function you want to run here
+
+        heroesFiltered = heroes.filter((hero) => hero.name.toLowerCase().includes(searchTerm.toLowerCase()))
+
+        tBody.remove()
+        tBody = makeTableBody(heroesFiltered)
+        table.appendChild(tBody);
+    });
 
     // make the table
     const table = document.createElement('table')
@@ -279,7 +295,7 @@ function heroes(heroes) {
     table.appendChild(tHead);
 
     // table body
-    let tBody = makeTableBody(heroes)
+    let tBody = makeTableBody(heroesFiltered)
     table.appendChild(tBody);
 
     document.body.appendChild(table);
@@ -289,18 +305,18 @@ function heroes(heroes) {
 
 
     tHead.addEventListener('click', (event) => {
-        sortHeroes(event, heroes)
+        sortHeroes(event, heroesFiltered)
         tBody.remove()
-        tBody = makeTableBody(heroes)
+        tBody = makeTableBody(heroesFiltered)
         table.appendChild(tBody);
     })
 
     // rough example of search box behavior
     /* searchbox.addEventListener('keypress', (event) => {
         const searchfor = 'lasjd' // get input from searchbox
-        heroes.filter((hero) => hero.name.toLowerCase.includes(searchfor.toLowerCase))
+        heroesFiltered.filter((hero) => hero.name.toLowerCase.includes(searchfor.toLowerCase))
         tBody.remove()
-        tBody = makeTableBody(heroes)
+        tBody = makeTableBody(heroesFiltered)
         table.appendChild(tBody)
     }) */
 }
