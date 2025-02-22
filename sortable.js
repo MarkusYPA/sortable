@@ -320,15 +320,38 @@ function heroes(heroes) {
     searchbar.type = 'text'
     document.body.appendChild(searchbar)
 
+    //error variables
+    let showedOnce = false;
+    let errorMessage = null;
+
     searchbar.addEventListener('input', (event) => {
         const searchTerm = event.target.value;
 
-        heroesFiltered = heroes.filter((hero) => hero.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        sortByColumn(heroesFiltered, false, sortBy)
+        heroesFiltered = heroes.filter((hero) =>
+            hero.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
-        tBody.remove()
-        tBody = makeTableBody(heroesFiltered)
-        table.appendChild(tBody);
+        //if not found --> remove head, body, show error. Else ---> add them back
+        if (heroesFiltered.length === 0 && !showedOnce) {
+            tBody.remove();
+            errorMessage = document.createElement('div');
+            errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
+            errorMessage.style.color = "red";
+            document.body.appendChild(errorMessage);
+            showedOnce = true;
+        } else if (heroesFiltered.length > 0) {
+            if (errorMessage) {
+                errorMessage.remove();
+                errorMessage = null;
+            }
+            showedOnce = false;
+
+            sortByColumn(heroesFiltered, false, sortBy);
+
+            tBody.remove();
+            tBody = makeTableBody(heroesFiltered);
+            table.appendChild(tBody);
+        }
     });
 
     // make the table
