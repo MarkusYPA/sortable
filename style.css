@@ -13,7 +13,10 @@ h1 {
     font-family: 'Righteous', system-ui, sans-serif;
 }
 
-
+.error-message {
+    background-color: rgba(31, 32, 36, 0.859);
+    
+}
 .table-container {
     display: flex;
     flex-direction: column;

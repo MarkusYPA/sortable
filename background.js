@@ -30,7 +30,8 @@ export function makeBackground() {
 
                 // Generate gradient colors based on position
                 let hue = 20 + (x / canvas.width) * 50;       // Hue varies
-                let lightness = 32 + Math.sin(y * 0.01) * 2;  // Lightness oscillates
+                let lightness = 32 + Math.sin(y * 0.01) * 3;  // Lightness oscillates
+                //lightness = 30;
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);

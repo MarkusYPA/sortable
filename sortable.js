@@ -145,25 +145,33 @@ function makeSearchBar(table, heroes) {
     //error variables
     const errorMessage = document.createElement('div');
     errorMessage.style.width = '100%'
+    errorMessage.classList.add('error-message')
+    const errorText = document.createElement('p')
+
 
     searchbar.addEventListener('input', (event) => {
         const searchTerm = event.target.value;
+
+        currentPage = 1;
 
         heroesFiltered = heroes.filter((hero) =>
             hero.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
         if (heroesFiltered.length === 0) {
-            tBody.remove();
-            errorMessage.innerHTML = "Sorry, the hero you were searching for does not exist!";
-            errorMessage.style.color = "red";
+            tBody.remove();            
+            errorMessage.appendChild(errorText)
+            errorText.innerHTML = "Sorry, the hero you were searching for does not exist!";
+            errorText.style.color = "red";
+            errorText.style.margin = "10px";
         } else if (heroesFiltered.length > 0) {
-            errorMessage.innerHTML = "";
+            errorText.remove();
             sortByColumn(heroesFiltered, prevSort, ascend, sortBy);
             tBody.remove();
             tBody = makeTableBody(heroesFiltered);
             table.appendChild(tBody);
         }
+
 
         updatePagination();
     });
