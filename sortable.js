@@ -144,6 +144,7 @@ function makeTableBody(heroes) {
                 td.addEventListener("click", function () {
                     const slug = hero.slug;
                     window.location.href = `?slug=${slug}`;
+                    //window.location.href = `${window.location.pathname}?slug=${slug}`;
                 });
             }
 
@@ -161,6 +162,9 @@ function displayHeroDetails() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug");
     const hero = heroes.find(h => h.slug === slug);
+
+    const newURL = `${window.location.pathname}?slug=${slug}`;
+    window.history.replaceState({}, '', newURL);
 
     if (!hero) {
         document.body.innerHTML = "<h1>Hero not found</h1>";
