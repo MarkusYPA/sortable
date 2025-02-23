@@ -4,6 +4,8 @@ import { sortByColumn, sortHeroes } from "./sorting.js";
 import { makeBackground } from "./background.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+    currentPage = getPageFromURL();
+
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
         .then(response => response.json())
         .then(showHeroes)
@@ -255,6 +257,22 @@ function updateTable() {
     currentPage = Math.min(currentPage, totalPages); // Ensure current page is valid
     updatePagination();
 }
+// Update the URL with the current page number
+function updateURL(pageNumber) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', pageNumber);
+    window.history.pushState({}, '', url);
+}
+// Get the current page number from the URL
+function getPageFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    let page = parseInt(params.get('page'));
+    if (isNaN(page) || page < 1) {
+        page = 1;
+        updateURL(page);
+    }
+    return (page); 
+}
 
 function updatePagination() {
     const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
@@ -264,6 +282,8 @@ function updatePagination() {
         rowsPerPage === heroesFiltered.length
             ? 'Showing all results'
             : `Page ${currentPage} of ${totalPages}`;
+
+            updateURL(currentPage);
 }
 
 function addListeners() {
@@ -407,11 +427,9 @@ function showHeroes(rawHeroes) {
             updateTable();
         });
 
-        addListeners()
-
-        document.body.appendChild(container);
-
-    }
-
+    addListeners()
+    updatePagination();
+    
+    document.body.appendChild(container);
 }
 
