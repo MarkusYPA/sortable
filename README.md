@@ -9,6 +9,7 @@ You are a villain, and your goal is to gather intel on superheroes! This web pag
 - **Pagination**: Allows navigation through pages with selectable page sizes (10, 20, 50, 100, or all).
 - **Search**: Filters results dynamically as you type.
 - **Sorting**: Click on any column to sort alphabetically or numerically.
+- **Hero Pages**: Each superhero has their own page with more detailed information.
 
 ## Data Source
 
