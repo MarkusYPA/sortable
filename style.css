@@ -27,15 +27,6 @@ h1 {
 }
 
 
-
-/* .table-container h1::after{ /* hack added for Safari */
-/*     content: "";
-    display: inline-block;
-    width: 100%;
-}
- */
-
-
 #search-and-pages {
     display: flex;
     width: 100%;
@@ -61,20 +52,28 @@ th:hover ~ td {
     color: rgb(255, 172, 99); /* Change this to your desired color */
 }
 
+td:nth-child(2):hover {
+    color: rgb(255, 172, 99);
+}
+
+td:nth-child(2) {
+    cursor: pointer;
+}
+
 td {
     table-layout: fixed;
     overflow-wrap: break-word;
 }
 
 /* column widths */
-th:nth-child(1), td:nth-child(1) { width: 50px; }
-th:nth-child(2), td:nth-child(2) { width: 100px; }
+th:nth-child(1), td:nth-child(1) { width: 40px; }
+th:nth-child(2), td:nth-child(2) { width: 80px; }
 th:nth-child(3), td:nth-child(3) { width: 130px; }
 th:nth-child(4), td:nth-child(4) { width: 150px; }
 th:nth-child(5), td:nth-child(5) { width: 80px; }
 th:nth-child(6), td:nth-child(6) { width: 60px; }
 th:nth-child(7), td:nth-child(7) { width: 110px; }
-th:nth-child(8), td:nth-child(8) { width: 100px; }
+th:nth-child(8), td:nth-child(8) { width: 130px; }
 th:nth-child(9), td:nth-child(9) { width: 200px; }
 th:nth-child(10), td:nth-child(10) { width: 70px; }
 

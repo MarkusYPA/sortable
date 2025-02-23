@@ -17,13 +17,10 @@ function cmToNum(str) {
     return value
 }
 
-function kgToNum(str) {
+function lbToNum(str) {
+    if (str[0] == '-') return -1
     if (str == undefined) return -1
     let value = Number(str.match(/\d+/)[0])
-
-    // The enormous are measured in tons 
-    if (str.slice(-2) != 'kg') value *= 1000
-
     return value
 }
 
@@ -122,13 +119,13 @@ function sortByColumn(heroes, prevSort, ascend, sortBy = '') {
             break
         case 'weight':
             if (prevSort != 'weight' || ascend) {
-                heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1]))
+                heroes.sort((a, b) => lbToNum(a.appearance.weight[0]) - lbToNum(b.appearance.weight[0]))
                 ascend = false
             } else {
-                heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
+                heroes.sort((a, b) => lbToNum(b.appearance.weight[0]) - lbToNum(a.appearance.weight[0]))
                 ascend = true
             }
-            heroes.sort((a, b) => (kgToNum(a.appearance.weight[1]) <= 0 ? 1 : kgToNum(b.appearance.weight[1]) <= 0 ? -1 : 0));
+            heroes.sort((a, b) => (lbToNum(a.appearance.weight[0]) <= 0 ? 1 : lbToNum(b.appearance.weight[0]) <= 0 ? -1 : 0));
             break
         case 'placeofbirth':
             if (prevSort != 'placeofbirth' || ascend) {

@@ -83,16 +83,10 @@ function objToText(obj) {
 
         if (Array.isArray(obj[key])) {
             const vals = arrToText(obj[key])
-
-            console.log("It's an array", vals)
-
             txt += `${key}: ${vals}`
-
             console.log(txt)
         } else {
             txt += `${key}: ${obj[key]}`
-
-            console.log("Not an array:", obj[key])
         }
 
         if (i != Object.keys(obj).length - 1) txt += '<br>'
