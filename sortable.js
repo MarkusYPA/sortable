@@ -271,7 +271,7 @@ function getPageFromURL() {
         page = 1;
         updateURL(page);
     }
-    return (page); 
+    return (page);
 }
 
 function updatePagination() {
@@ -283,7 +283,7 @@ function updatePagination() {
             ? 'Showing all results'
             : `Page ${currentPage} of ${totalPages}`;
 
-            updateURL(currentPage);
+    updateURL(currentPage);
 }
 
 function addListeners() {
@@ -356,16 +356,16 @@ function showHeroes(rawHeroes) {
         const container = document.createElement('div');
         container.className = 'table-container';
 
-/*         const titleBanner1 = document.createElement('h1')
-        titleBanner1.classList.add('title')
-        titleBanner1.innerHTML = "SUPER"
-        titleBanner1.style.fontSize = '234px'
-        titleBanner1.style.letterSpacing = "10px";
-        const titleBanner2 = document.createElement('h1')
-        titleBanner2.classList.add('title')
-        titleBanner2.innerHTML = "HEROES"
-        titleBanner2.style.fontSize = '190px'
-        titleBanner2.style.letterSpacing = "10px"; */
+        /*         const titleBanner1 = document.createElement('h1')
+                titleBanner1.classList.add('title')
+                titleBanner1.innerHTML = "SUPER"
+                titleBanner1.style.fontSize = '234px'
+                titleBanner1.style.letterSpacing = "10px";
+                const titleBanner2 = document.createElement('h1')
+                titleBanner2.classList.add('title')
+                titleBanner2.innerHTML = "HEROES"
+                titleBanner2.style.fontSize = '190px'
+                titleBanner2.style.letterSpacing = "10px"; */
 
 
 
@@ -399,8 +399,8 @@ function showHeroes(rawHeroes) {
 
 
 
-/*         container.appendChild(titleBanner1)
-        container.appendChild(titleBanner2) */
+        /*         container.appendChild(titleBanner1)
+                container.appendChild(titleBanner2) */
 
         // Add page size selector 
         const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
@@ -427,9 +427,9 @@ function showHeroes(rawHeroes) {
             updateTable();
         });
 
-    addListeners()
-    updatePagination();
-    
-    document.body.appendChild(container);
-}
+        addListeners()
+        updatePagination();
 
+        document.body.appendChild(container);
+    }
+}
