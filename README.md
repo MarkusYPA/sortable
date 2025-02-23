@@ -58,9 +58,12 @@ Data is fetched from:
   - Clicking a column toggles between ascending and descending order.
   - Missing values always appear last.
 
-## Contribution
+## Miscellaneous
 
-Feel free to fork this project and enhance its features!
-
----
 Made for villains who need organized superhero data. 🦹‍♂️
+
+
+## Authors
+- [Roope Hongisto](https://github.com/RuBoMa)
+- [Richard Aung Khant Min](https://github.com/)
+- [Markus Amberla](https://github.com/MarkusYPA)
