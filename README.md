@@ -65,5 +65,5 @@ Made for villains who need organized superhero data. 🦹‍♂️
 
 ## Authors
 - [Roope Hongisto](https://github.com/RuBoMa)
-- [Richard Aung Khant Min](https://github.com/)
+- [Richard Aung Khant Min](https://github.com/Richard-AungKhantMin)
 - [Markus Amberla](https://github.com/MarkusYPA)
