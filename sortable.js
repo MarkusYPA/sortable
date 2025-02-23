@@ -202,7 +202,7 @@ function getPageFromURL() {
     let page = parseInt(params.get('page'));
     if (isNaN(page) || page < 1) {
         page = 1;
-    updateURL(page);
+        updateURL(page);
     }
     return (page); 
 }
@@ -318,7 +318,8 @@ function heroes(heroes) {
     });
 
     addListeners()
-
+    updatePagination();
+    
     document.body.appendChild(container);
 }
 
