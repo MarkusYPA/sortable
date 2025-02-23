@@ -20,13 +20,16 @@ export function makeBackground() {
 
     const dotSpacing = 40; // Spacing between dots
     const maxRadius = 25;  // Maximum dot radius
+    let time = 0;          // Animation time variable
 
     function drawHalftone() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let y = 0; y < canvas.height + maxRadius; y += dotSpacing) {
             for (let x = 0; x < canvas.width + maxRadius; x += dotSpacing) {
-                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
+                //let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
+                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003 + time) * maxRadius);
+
 
                 // Generate gradient colors based on position
                 let hue = 20 + (x / canvas.width) * 50;       // Hue varies
@@ -35,7 +38,6 @@ export function makeBackground() {
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
-                //ctx.fillStyle = "#cbe8bb";
                 ctx.fillStyle = `hsl(${hue}, 100%, ${lightness}%)`;
                 ctx.fill();
             }
@@ -43,8 +45,15 @@ export function makeBackground() {
         ctx.restore();
     }
 
+    function animate() {
+        time -= 0.003; // Slow animation speed
+        drawHalftone();
+        requestAnimationFrame(animate);
+    }
+
     // Resize and redraw on window resize
     window.addEventListener("resize", resizeCanvas);
 
     resizeCanvas();
+    animate();
 }

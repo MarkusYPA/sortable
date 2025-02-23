@@ -17,14 +17,16 @@ function cmToNum(str) {
     return value
 }
 
-function kgToNum(str) {
+function lbToNum(str) {
+    if (str[0] == '-') return -1
     if (str == undefined) return -1
     let value = Number(str.match(/\d+/)[0])
-
-    // The enormous are measured in tons 
-    if (str.slice(-2) != 'kg') value *= 1000
-
     return value
+}
+
+// Remove words in parenteses, spaces and leading and trailing white space
+function fomatPOB(s) {
+    return s.replace(/\([^)]*\)/g, '').replaceAll(' ', '').trim()
 }
 
 function aligToNum(align) {
@@ -117,20 +119,20 @@ function sortByColumn(heroes, prevSort, ascend, sortBy = '') {
             break
         case 'weight':
             if (prevSort != 'weight' || ascend) {
-                heroes.sort((a, b) => kgToNum(a.appearance.weight[1]) - kgToNum(b.appearance.weight[1]))
+                heroes.sort((a, b) => lbToNum(a.appearance.weight[0]) - lbToNum(b.appearance.weight[0]))
                 ascend = false
             } else {
-                heroes.sort((a, b) => kgToNum(b.appearance.weight[1]) - kgToNum(a.appearance.weight[1]))
+                heroes.sort((a, b) => lbToNum(b.appearance.weight[0]) - lbToNum(a.appearance.weight[0]))
                 ascend = true
             }
-            heroes.sort((a, b) => (kgToNum(a.appearance.weight[1]) <= 0 ? 1 : kgToNum(b.appearance.weight[1]) <= 0 ? -1 : 0));
+            heroes.sort((a, b) => (lbToNum(a.appearance.weight[0]) <= 0 ? 1 : lbToNum(b.appearance.weight[0]) <= 0 ? -1 : 0));
             break
         case 'placeofbirth':
             if (prevSort != 'placeofbirth' || ascend) {
-                heroes.sort((a, b) => a.biography.placeOfBirth.localeCompare(b.biography.placeOfBirth))
+                heroes.sort((a, b) => fomatPOB(a.biography.placeOfBirth).localeCompare(fomatPOB(b.biography.placeOfBirth)))
                 ascend = false
             } else {
-                heroes.sort((a, b) => b.biography.placeOfBirth.localeCompare(a.biography.placeOfBirth))
+                heroes.sort((a, b) => fomatPOB(b.biography.placeOfBirth).localeCompare(fomatPOB(a.biography.placeOfBirth)))
                 ascend = true
             }
             heroes.sort((a, b) => (a.biography.placeOfBirth == '-' ? 1 : b.biography.placeOfBirth == '-' ? -1 : 0));
@@ -146,13 +148,9 @@ function sortByColumn(heroes, prevSort, ascend, sortBy = '') {
             heroes.sort((a, b) => (a.biography.alignment == '-' ? 1 : b.biography.alignment == '-' ? -1 : 0));
             break
         default:
-            if (ascend) {
-                heroes.sort((a, b) => a.name.localeCompare(b.name))
-                ascend = false
-            } else {
-                heroes.sort((a, b) => (a.name == '' ? 1 : b.name == '' ? -1 : 0))
-                ascend = true
-            }
+            heroes.sort((a, b) => a.name.localeCompare(b.name))
+            ascend = false
+
     }
     return ascend
 }

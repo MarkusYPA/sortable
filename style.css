@@ -26,21 +26,6 @@ h1 {
     width: 1050px;
 }
 
-.table-container h1 {
-    width: 100%;
-    text-align: justify;
-    text-align-last: justify;
-    margin: 0;
-    padding: 0;
-}
-
-/* .table-container h1::after{ /* hack added for Safari */
-/*     content: "";
-    display: inline-block;
-    width: 100%;
-}
- */
-
 
 #search-and-pages {
     display: flex;
@@ -67,19 +52,71 @@ th:hover ~ td {
     color: rgb(255, 172, 99); /* Change this to your desired color */
 }
 
+td:nth-child(2):hover {
+    color: rgb(255, 172, 99);
+}
+
+td:nth-child(2) {
+    cursor: pointer;
+}
+
 td {
     table-layout: fixed;
     overflow-wrap: break-word;
 }
 
 /* column widths */
-th:nth-child(1), td:nth-child(1) { width: 50px; }
-th:nth-child(2), td:nth-child(2) { width: 100px; }
+th:nth-child(1), td:nth-child(1) { width: 40px; }
+th:nth-child(2), td:nth-child(2) { width: 80px; }
 th:nth-child(3), td:nth-child(3) { width: 130px; }
 th:nth-child(4), td:nth-child(4) { width: 150px; }
 th:nth-child(5), td:nth-child(5) { width: 80px; }
 th:nth-child(6), td:nth-child(6) { width: 60px; }
 th:nth-child(7), td:nth-child(7) { width: 110px; }
-th:nth-child(8), td:nth-child(8) { width: 100px; }
+th:nth-child(8), td:nth-child(8) { width: 130px; }
 th:nth-child(9), td:nth-child(9) { width: 200px; }
 th:nth-child(10), td:nth-child(10) { width: 70px; }
+
+.hero-container {
+    background-color: rgba(31, 32, 36, 0.859);
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    margin: 40px;
+    padding-top: 20px;
+    padding-bottom: 50px;
+}
+
+.hero-inner {
+    width: 480px;
+    text-align: left;
+    display: inline-block; /* Allows width to be set and respects text-align */
+}
+
+.hero-inner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.hero-inner-content img {
+    max-width: 100%;
+    /* Ensures image doesn't exceed inner div width */
+    height: auto;
+    /* Maintains image aspect ratio */
+}
+
+.title-container {
+    display: flex;
+    width: 100%;
+}
+
+.title-container h1 {
+    width: 100%;
+    text-align: justify;
+    text-align-last: justify;
+    margin: 0;
+    padding: 0;
+}
+
+
