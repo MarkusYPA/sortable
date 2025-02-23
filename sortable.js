@@ -144,7 +144,6 @@ function makeTableBody(heroes) {
                 td.addEventListener("click", function () {
                     const slug = hero.slug;
                     window.location.href = `?slug=${slug}`;
-                    //window.location.href = `${window.location.pathname}?slug=${slug}`;
                 });
             }
 
@@ -163,6 +162,7 @@ function displayHeroDetails() {
     const slug = params.get("slug");
     const hero = heroes.find(h => h.slug === slug);
 
+    // format url correctly
     const newURL = `${window.location.pathname}?slug=${slug}`;
     window.history.replaceState({}, '', newURL);
 
@@ -171,16 +171,18 @@ function displayHeroDetails() {
         return;
     }
 
+    document.title = hero.name
+
     const container = document.createElement('div')
     container.classList.add('hero-container')
 
     const innercont = document.createElement('div')
     innercont.classList.add('hero-inner')
 
-    // title
-    const tit = document.createElement("h1");    // standard data cell
-    tit.innerHTML = hero.name;
-    innercont.appendChild(tit)
+    // header
+    const header = document.createElement("h1");    // standard data cell
+    header.innerHTML = hero.name;
+    innercont.appendChild(header)
 
     // image
     const img = document.createElement("img")
