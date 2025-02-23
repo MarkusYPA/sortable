@@ -20,9 +20,8 @@ h1 {
 .table-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    /* gap: 10px; */
     align-items: center;
-    /* width: max-content; */
     width: 1050px;
 }
 
@@ -32,6 +31,7 @@ h1 {
     width: 100%;
     gap: 10px;
     justify-content: left;
+    margin-bottom: 15px;
 }
 
 table {
@@ -41,6 +41,12 @@ table {
     background-color: rgba(31, 32, 36, 0.859);
     padding: 10px;
     table-layout: fixed;
+    margin-bottom: 15px;
+}
+
+.pagination {
+    display: flex;
+    gap: 10px;
 }
 
 th {

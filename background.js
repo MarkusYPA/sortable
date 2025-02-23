@@ -27,14 +27,12 @@ export function makeBackground() {
 
         for (let y = 0; y < canvas.height + maxRadius; y += dotSpacing) {
             for (let x = 0; x < canvas.width + maxRadius; x += dotSpacing) {
-                //let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003) * maxRadius); // Sinusoidal variation
-                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003 + time) * maxRadius);
+                let radius = Math.abs(Math.sin(x * 0.002 + y * 0.003 + time) * maxRadius); // Sinusoidal variation
 
 
                 // Generate gradient colors based on position
                 let hue = 20 + (x / canvas.width) * 50;       // Hue varies
-                let lightness = 32 + Math.sin(y * 0.01) * 3;  // Lightness oscillates
-                //lightness = 30;
+                let lightness = 32 + Math.sin(y * 0.01) * 3;  // lightness oscillates
 
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
