@@ -6,7 +6,7 @@ import { makeBackground } from "./background.js";
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json")
         .then(response => response.json())
-        .then(heroes)
+        .then(showHeroes)
         .catch(error => console.error("Error loading data:", error));
 });
 
@@ -25,6 +25,7 @@ let paginationDiv
 let prevButton
 let nextButton
 
+let heroes = []
 export let heroesFiltered = []
 
 // Null values don't work in many sorting functions, so turn them to ''
@@ -79,7 +80,21 @@ function objToText(obj) {
     let txt = ''
     for (let i = 0; i < Object.keys(obj).length; i++) {
         const key = Object.keys(obj)[i]
-        txt += `${key}: ${obj[key]}`
+
+        if (Array.isArray(obj[key])) {
+            const vals = arrToText(obj[key])
+
+            console.log("It's an array", vals)
+
+            txt += `${key}: ${vals}`
+
+            console.log(txt)
+        } else {
+            txt += `${key}: ${obj[key]}`
+
+            console.log("Not an array:", obj[key])
+        }
+
         if (i != Object.keys(obj).length - 1) txt += '<br>'
     }
     return txt;
@@ -127,6 +142,15 @@ function makeTableBody(heroes) {
         values.forEach(value => {
             const td = document.createElement("td");    // standard data cell
             td.innerHTML = value;
+
+            if (value == hero.name) {
+                // Add click event to hero names
+                td.addEventListener("click", function () {
+                    const slug = hero.slug;
+                    window.location.href = `?slug=${slug}`;
+                });
+            }
+
             row.appendChild(td)
         });
 
@@ -135,6 +159,55 @@ function makeTableBody(heroes) {
 
     return tbody
 }
+
+// Display hero details on hero.html
+function displayHeroDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+    const hero = heroes.find(h => h.slug === slug);
+
+    if (!hero) {
+        document.body.innerHTML = "<h1>Hero not found</h1>";
+        return;
+    }
+
+    const container = document.createElement('div')
+    container.classList.add('hero-container')
+
+    const innercont = document.createElement('div')
+    innercont.classList.add('hero-inner')
+
+    // title
+    const tit = document.createElement("h1");    // standard data cell
+    tit.innerHTML = hero.name;
+    innercont.appendChild(tit)
+
+    // image
+    const img = document.createElement("img")
+    img.src = hero.images.lg
+    img.alt = hero.name
+    innercont.appendChild(img)
+
+    const values = [
+        objToText(hero.powerstats),
+        objToText(hero.appearance),
+        objToText(hero.biography),
+        objToText(hero.work),
+        objToText(hero.connections),
+    ];
+
+    // values
+    values.forEach(value => {
+        const para = document.createElement("p");    // standard data cell
+        para.innerHTML = value;
+        innercont.appendChild(para)
+    })
+
+    container.appendChild(innercont)
+    document.body.appendChild(container)
+}
+
+
 
 function makeSearchBar(table, heroes) {
     // searchbar
@@ -159,7 +232,7 @@ function makeSearchBar(table, heroes) {
         );
 
         if (heroesFiltered.length === 0) {
-            tBody.remove();            
+            tBody.remove();
             errorMessage.appendChild(errorText)
             errorText.innerHTML = "Sorry, the hero you were searching for does not exist!";
             errorText.style.color = "red";
@@ -232,73 +305,119 @@ function addListeners() {
         table.appendChild(tBody);
         updatePagination();
     })
+
+
 }
 
-function heroes(heroes) {
+function showHeroes(rawHeroes) {
+    heroes = rawHeroes
+
     // replace any null values with '' so sorting works
     nullsToEmpty(heroes)
     sortByColumn(heroes) // default sorting
     makeBackground()
 
-    // make the table
-    table = document.createElement('table')
-    table.id = 'hero-table'
-
-    heroesFiltered = heroes
-    const [searchbar, errorMessage] = makeSearchBar(table, heroes)
+    if (window.location.search.includes("slug")) {
+        displayHeroDetails();
+    } else {
 
 
-    // table header
-    tHead = makeTableHead()
-    table.appendChild(tHead);
+        // make the table
+        table = document.createElement('table')
+        table.id = 'hero-table'
 
-    // table body
-    tBody = makeTableBody(heroesFiltered)
-    table.appendChild(tBody);
-
-    // Create container for table and pagination
-    const container = document.createElement('div');
-    container.className = 'table-container';
-
-    const titleBanner1 = document.createElement('h1')
-    titleBanner1.classList.add('title')
-    titleBanner1.innerHTML = "S U P E R"
-    titleBanner1.style.fontSize = '234px'
-    const titleBanner2 = document.createElement('h1')
-    titleBanner2.classList.add('title')
-    titleBanner2.innerHTML = "H E R O E S"
-    titleBanner2.style.fontSize = '190px'
-
-    container.appendChild(titleBanner1)
-    container.appendChild(titleBanner2)
-
-    // Add page size selector 
-    const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
-    const searchAndPages = document.createElement('div')
-    searchAndPages.id = "search-and-pages"
-    searchAndPages.appendChild(searchbar)
-    searchAndPages.appendChild(sizeContainer);
-
-    container.appendChild(searchAndPages);
-    container.appendChild(errorMessage);
-    container.appendChild(table);
-
-    // calculate total pages and add pagination controls 
-    const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
-    [paginationDiv, prevButton, nextButton] = createPaginationControls(totalPages);
-    container.appendChild(paginationDiv);
+        heroesFiltered = heroes
+        const [searchbar, errorMessage] = makeSearchBar(table, heroes)
 
 
-    // Add event listener for page size selector
-    sizeSelect.addEventListener('change', (event) => {
-        const newSize = event.target.value;
-        rowsPerPage = newSize === 'all' ? heroesFiltered.length : parseInt(newSize);
-        currentPage = 1; // Reset to first page        
-        updateTable();
-    });
+        // table header
+        tHead = makeTableHead()
+        table.appendChild(tHead);
 
-    addListeners()
+        // table body
+        tBody = makeTableBody(heroesFiltered)
+        table.appendChild(tBody);
 
-    document.body.appendChild(container);
+        // Create container for table and pagination
+        const container = document.createElement('div');
+        container.className = 'table-container';
+
+/*         const titleBanner1 = document.createElement('h1')
+        titleBanner1.classList.add('title')
+        titleBanner1.innerHTML = "SUPER"
+        titleBanner1.style.fontSize = '234px'
+        titleBanner1.style.letterSpacing = "10px";
+        const titleBanner2 = document.createElement('h1')
+        titleBanner2.classList.add('title')
+        titleBanner2.innerHTML = "HEROES"
+        titleBanner2.style.fontSize = '190px'
+        titleBanner2.style.letterSpacing = "10px"; */
+
+
+
+        // Create a div to hold the letters
+        const titleDiv1 = document.createElement("div");
+        titleDiv1.classList.add("title-container"); // Add a class for styling
+
+        // Create individual span elements for each letter
+        "SUPER".split("").forEach(letter => {
+            const h1 = document.createElement("h1");
+            h1.textContent = letter;
+            h1.classList.add('title')
+            h1.style.fontSize = '300px'
+            titleDiv1.appendChild(h1);
+        });
+
+        const titleDiv2 = document.createElement("div");
+        titleDiv2.classList.add("title-container"); // Add a class for styling
+
+        // Create individual span elements for each letter
+        "HEROES".split("").forEach(letter => {
+            const h1 = document.createElement("h1");
+            h1.textContent = letter;
+            h1.classList.add('title')
+            h1.style.fontSize = '270px'
+            titleDiv2.appendChild(h1);
+        });
+
+        container.appendChild(titleDiv1)
+        container.appendChild(titleDiv2)
+
+
+
+/*         container.appendChild(titleBanner1)
+        container.appendChild(titleBanner2) */
+
+        // Add page size selector 
+        const { container: sizeContainer, sizeSelect } = createPageSizeSelector();
+        const searchAndPages = document.createElement('div')
+        searchAndPages.id = "search-and-pages"
+        searchAndPages.appendChild(searchbar)
+        searchAndPages.appendChild(sizeContainer);
+
+        container.appendChild(searchAndPages);
+        container.appendChild(errorMessage);
+        container.appendChild(table);
+
+        // calculate total pages and add pagination controls 
+        const totalPages = Math.ceil(heroesFiltered.length / rowsPerPage);
+        [paginationDiv, prevButton, nextButton] = createPaginationControls(totalPages);
+        container.appendChild(paginationDiv);
+
+
+        // Add event listener for page size selector
+        sizeSelect.addEventListener('change', (event) => {
+            const newSize = event.target.value;
+            rowsPerPage = newSize === 'all' ? heroesFiltered.length : parseInt(newSize);
+            currentPage = 1; // Reset to first page        
+            updateTable();
+        });
+
+        addListeners()
+
+        document.body.appendChild(container);
+
+    }
+
 }
 
